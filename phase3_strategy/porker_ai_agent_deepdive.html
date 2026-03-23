@@ -1,0 +1,825 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Porker AI農場長 ― 構想深掘り</title>
+<style>
+  :root {
+    --primary: #1a1a2e;
+    --accent: #e63946;
+    --green: #2a9d8f;
+    --blue: #457b9d;
+    --yellow: #e9c46a;
+    --orange: #f4a261;
+    --bg: #ffffff;
+    --surface: #f8f9fa;
+    --border: #e9ecef;
+    --text: #212529;
+    --muted: #6c757d;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Hiragino Kaku Gothic Pro', 'Meiryo', sans-serif; background: var(--bg); color: var(--text); line-height: 1.7; }
+
+  /* ヘッダー */
+  .hero { background: var(--primary); color: #fff; padding: 48px 32px 40px; }
+  .hero-inner { max-width: 1000px; margin: 0 auto; }
+  .hero-eyebrow { font-size: 11px; letter-spacing: 3px; color: var(--accent); font-weight: bold; margin-bottom: 12px; }
+  .hero h1 { font-size: 32px; font-weight: 900; margin-bottom: 10px; line-height: 1.2; }
+  .hero h1 span { color: var(--accent); }
+  .hero-sub { font-size: 15px; color: #adb5bd; max-width: 680px; }
+  .hero-meta { margin-top: 20px; font-size: 12px; color: #6c757d; display: flex; gap: 24px; }
+
+  /* ナビ */
+  .toc { background: var(--surface); border-bottom: 1px solid var(--border); padding: 14px 32px; position: sticky; top: 0; z-index: 100; }
+  .toc-inner { max-width: 1000px; margin: 0 auto; display: flex; gap: 20px; flex-wrap: wrap; font-size: 12px; }
+  .toc a { color: var(--blue); text-decoration: none; white-space: nowrap; }
+  .toc a:hover { color: var(--accent); text-decoration: underline; }
+
+  /* レイアウト */
+  .main { max-width: 1000px; margin: 0 auto; padding: 40px 32px 80px; }
+  .section { margin-bottom: 56px; }
+  .section-label { font-size: 11px; letter-spacing: 3px; color: var(--accent); font-weight: bold; margin-bottom: 6px; }
+  h2 { font-size: 22px; color: var(--primary); border-left: 5px solid var(--accent); padding-left: 14px; margin-bottom: 20px; }
+  h3 { font-size: 16px; color: var(--primary); margin: 24px 0 10px; padding-bottom: 4px; border-bottom: 2px solid var(--border); }
+  h4 { font-size: 14px; color: var(--blue); margin: 16px 0 8px; }
+  p { font-size: 14px; color: #444; margin-bottom: 10px; }
+  small { font-size: 12px; color: var(--muted); }
+
+  table { width: 100%; border-collapse: collapse; font-size: 13px; margin: 12px 0 20px; }
+  th { background: var(--primary); color: #fff; padding: 10px 12px; text-align: left; font-weight: normal; }
+  td { padding: 10px 12px; border-bottom: 1px solid var(--border); vertical-align: top; }
+  tr:nth-child(even) td { background: var(--surface); }
+
+  /* フェーズタイムライン */
+  .phase-timeline { display: flex; gap: 0; margin: 20px 0; border-radius: 10px; overflow: hidden; border: 2px solid var(--border); }
+  .phase-col { flex: 1; padding: 20px 16px; }
+  .ph1 { background: #e8f4f8; border-right: 2px solid var(--border); }
+  .ph2 { background: #f0faf9; border-right: 2px solid var(--border); }
+  .ph3 { background: #fff9e8; }
+  .phase-col .ph-num { font-size: 11px; font-weight: bold; letter-spacing: 2px; margin-bottom: 4px; }
+  .phase-col h4 { font-size: 14px; border: none; margin: 0 0 8px; padding: 0; color: var(--primary); }
+  .phase-col .ph-period { font-size: 11px; color: var(--muted); background: rgba(0,0,0,0.06); display: inline-block; padding: 2px 8px; border-radius: 10px; margin-bottom: 10px; }
+  .phase-col ul { list-style: none; font-size: 12px; line-height: 2; }
+  .phase-col ul li:before { content: "→ "; color: var(--green); }
+
+  /* アイデアカード */
+  .idea-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin: 16px 0; }
+  @media (max-width: 700px) { .idea-grid { grid-template-columns: 1fr; } }
+  .idea-card { border: 1px solid var(--border); border-radius: 10px; overflow: hidden; }
+  .idea-card.high { border-top: 3px solid var(--accent); }
+  .idea-card.mid { border-top: 3px solid var(--orange); }
+  .idea-card.low { border-top: 3px solid var(--muted); }
+  .idea-header { padding: 14px 16px 10px; background: var(--surface); }
+  .idea-header .idea-num { font-size: 11px; font-weight: bold; letter-spacing: 1px; color: var(--muted); }
+  .idea-header h4 { font-size: 14px; color: var(--primary); margin: 4px 0 0; border: none; padding: 0; }
+  .idea-body { padding: 14px 16px; font-size: 13px; }
+  .idea-body p { font-size: 13px; }
+  .ref-bar { background: #eef7ff; border-left: 3px solid var(--blue); padding: 6px 10px; font-size: 11px; color: var(--blue); margin-top: 10px; border-radius: 0 4px 4px 0; }
+  .tag { display: inline-block; padding: 2px 10px; border-radius: 12px; font-size: 11px; margin: 2px; }
+  .tag-phase1 { background: #e8f4f8; color: var(--blue); }
+  .tag-phase2 { background: #f0faf9; color: var(--green); }
+  .tag-phase3 { background: #fff9e8; color: #856404; }
+  .tag-high { background: #fde8e8; color: var(--accent); }
+  .tag-mid { background: #fff4e8; color: var(--orange); }
+  .tag-data { background: #e8f4f8; color: var(--blue); }
+
+  /* 優先度マトリックス */
+  .priority-matrix { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin: 16px 0; }
+  @media (max-width: 700px) { .priority-matrix { grid-template-columns: 1fr; } }
+  .priority-box { border-radius: 10px; padding: 18px; }
+  .p-high { background: #fde8e8; border: 2px solid var(--accent); }
+  .p-mid { background: #fff4e8; border: 2px solid var(--orange); }
+  .p-low { background: var(--surface); border: 2px solid var(--border); }
+  .priority-box h4 { font-size: 13px; font-weight: bold; margin: 0 0 10px; border: none; padding: 0; }
+  .p-high h4 { color: var(--accent); }
+  .p-mid h4 { color: var(--orange); }
+  .priority-box ul { list-style: none; font-size: 13px; line-height: 2; }
+  .priority-box ul li:before { content: "✓ "; }
+
+  /* ロードマップ */
+  .roadmap { position: relative; margin: 20px 0; }
+  .rm-row { display: flex; gap: 16px; margin-bottom: 8px; align-items: flex-start; }
+  .rm-dot { width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: bold; color: #fff; flex-shrink: 0; margin-top: 2px; }
+  .rm-dot-1 { background: var(--blue); }
+  .rm-dot-2 { background: var(--green); }
+  .rm-dot-3 { background: var(--accent); }
+  .rm-content { flex: 1; border: 1px solid var(--border); border-radius: 8px; padding: 14px 16px; }
+  .rm-content h4 { font-size: 14px; color: var(--primary); margin: 0 0 6px; border: none; padding: 0; }
+  .rm-content ul { font-size: 13px; list-style: none; line-height: 2; }
+  .rm-content ul li:before { content: "○ "; color: var(--green); }
+  .rm-period { font-size: 11px; color: var(--muted); margin-left: 8px; }
+
+  /* ポジショニング */
+  .positioning { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin: 16px 0; }
+  @media (max-width: 700px) { .positioning { grid-template-columns: 1fr; } }
+  .pos-box { padding: 18px; border-radius: 10px; border: 1px solid var(--border); }
+  .pos-box h4 { font-size: 13px; color: var(--muted); font-weight: normal; margin-bottom: 8px; border: none; padding: 0; }
+  .pos-box .pos-val { font-size: 15px; font-weight: bold; color: var(--primary); }
+
+  /* 仮説検証 */
+  .hypothesis { border-left: 4px solid var(--green); padding: 14px 16px; margin: 12px 0; background: #f0faf9; border-radius: 0 8px 8px 0; }
+  .hypothesis .hyp-label { font-size: 11px; font-weight: bold; letter-spacing: 1px; color: var(--green); margin-bottom: 6px; }
+  .hypothesis h4 { font-size: 14px; color: var(--primary); margin: 0 0 8px; border: none; padding: 0; }
+  .hypothesis p { font-size: 13px; margin-bottom: 4px; }
+
+  /* フロー図 */
+  .flow { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin: 16px 0; }
+  .flow-box { background: var(--surface); border: 1px solid var(--border); border-radius: 6px; padding: 8px 14px; font-size: 13px; text-align: center; }
+  .flow-box.accent { background: var(--accent); color: #fff; border-color: var(--accent); }
+  .flow-box.green { background: var(--green); color: #fff; border-color: var(--green); }
+  .flow-arrow { color: var(--muted); font-size: 20px; }
+
+  /* 価格設計 */
+  .pricing-tiers { display: flex; gap: 0; border-radius: 10px; overflow: hidden; border: 2px solid var(--border); margin: 16px 0; }
+  .pt { flex: 1; padding: 20px 14px; text-align: center; border-right: 1px solid var(--border); }
+  .pt:last-child { border-right: none; }
+  .pt h4 { font-size: 13px; font-weight: bold; margin-bottom: 6px; border: none; padding: 0; }
+  .pt .price { font-size: 22px; font-weight: 900; margin: 8px 0; }
+  .pt ul { list-style: none; font-size: 11px; line-height: 2; text-align: left; }
+  .pt ul li { border-bottom: 1px solid var(--border); padding: 1px 0; }
+  .pt ul li.yes:before { content: "✓ "; color: var(--green); }
+  .pt ul li.no:before { content: "✗ "; color: var(--muted); color: #ccc; }
+  .pt ul li.no { color: #ccc; }
+  .pt-free { background: var(--surface); }
+  .pt-basic { background: #e8f4f8; }
+  .pt-pro { background: #f0faf9; }
+  .pt-ent { background: #fde8e8; }
+  .pt-pro { border: 2px solid var(--green); position: relative; }
+  .pt-pro:before { content: "推奨"; position: absolute; top: -12px; left: 50%; transform: translateX(-50%); background: var(--green); color: #fff; font-size: 10px; font-weight: bold; padding: 2px 10px; border-radius: 10px; }
+
+  /* コールアウト */
+  .callout { background: #fff3cd; border: 1px solid var(--yellow); border-radius: 8px; padding: 14px 18px; margin: 16px 0; font-size: 13px; }
+  .callout strong { color: #856404; }
+  .callout-red { background: #fde8e8; border-color: #f5c6cb; }
+  .callout-red strong { color: #721c24; }
+  .callout-green { background: #d4edda; border-color: #c3e6cb; }
+  .callout-green strong { color: #155724; }
+
+  /* エコシステム図 */
+  .ecosystem { background: var(--primary); border-radius: 12px; padding: 28px; margin: 16px 0; color: #fff; }
+  .eco-center { text-align: center; background: var(--accent); border-radius: 50%; width: 130px; height: 130px; display: flex; align-items: center; justify-content: center; margin: 0 auto 24px; }
+  .eco-center p { color: #fff; font-size: 13px; font-weight: bold; line-height: 1.4; margin: 0; }
+  .eco-nodes { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+  .eco-node { background: rgba(255,255,255,0.08); border-radius: 8px; padding: 12px; text-align: center; font-size: 12px; }
+  .eco-node .icon { font-size: 22px; margin-bottom: 4px; }
+  .eco-node p { color: #ccc; font-size: 11px; margin: 0; line-height: 1.5; }
+
+  .badge { display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 11px; font-weight: bold; }
+  .badge-new { background: var(--accent); color: #fff; }
+  .badge-exist { background: var(--blue); color: #fff; }
+  .badge-partner { background: var(--green); color: #fff; }
+
+  hr { border: none; border-top: 1px solid var(--border); margin: 40px 0; }
+  footer { text-align: center; font-size: 12px; color: var(--muted); padding: 24px; background: var(--surface); }
+</style>
+</head>
+<body>
+
+<!-- ===== HERO ===== -->
+<div class="hero">
+  <div class="hero-inner">
+    <div class="hero-eyebrow">SPECIAL FEATURE — CONCEPT DEEP DIVE</div>
+    <h1>Porker <span>AI農場長</span><br>構想深掘りレポート</h1>
+    <p class="hero-sub">ノートブック構想 × 他業界事例 × 競合リサーチを統合。「ベンチマーク＋AI農場長」という仮説を具体的なプロダクト・ロードマップに落とし込む。</p>
+    <div class="hero-meta">
+      <span>📅 2026-03-22</span>
+      <span>📊 フェーズ3 特集ページ</span>
+      <span>🎯 Porker AIエージェント 案B 深掘り</span>
+    </div>
+  </div>
+</div>
+
+<!-- ===== TOC ===== -->
+<div class="toc">
+  <div class="toc-inner">
+    <span style="color:var(--muted); font-size:11px;">目次：</span>
+    <a href="#vision">全体構想</a>
+    <a href="#phase-roadmap">3フェーズ設計</a>
+    <a href="#ideas">アイデア詳細10選</a>
+    <a href="#priority">優先度マトリックス</a>
+    <a href="#pricing">価格設計</a>
+    <a href="#ecosystem">エコシステム</a>
+    <a href="#hypothesis">検証仮説</a>
+    <a href="#dev">開発へのインプット</a>
+  </div>
+</div>
+
+<div class="main">
+
+<!-- ===== 0. エグゼクティブサマリー ===== -->
+<div class="section">
+  <div class="callout callout-green">
+    <strong>核心メッセージ：</strong>
+    Porkerが保有する国内最大規模の養豚データを「動かす」ことで、記録ツールから<strong>自律的に経営判断を支援するAI農場長</strong>へと進化する。競合が「何が起きているか（記録）」を提供する中、Porkerは「何をすべきか（提案）」を提供する唯一の国内サービスになれる。
+  </div>
+</div>
+
+<!-- ===== 1. 全体構想 ===== -->
+<div class="section" id="vision">
+  <div class="section-label">SECTION 01</div>
+  <h2>全体構想：「AI農場長」とは何か</h2>
+
+  <h3>ポジショニングの明確化</h3>
+  <div class="positioning">
+    <div class="pos-box" style="border-color:var(--muted)">
+      <h4>❌ やらないこと（競合と同じ土俵）</h4>
+      <div class="pos-val" style="color:var(--muted); font-size:14px;">
+        「AIカメラで監視する」<br>
+        「データをきれいに見せる」<br>
+        「異常を検知してアラートする」
+      </div>
+    </div>
+    <div class="pos-box" style="border-color:var(--accent); background:#fff8f8;">
+      <h4>✅ やること（独自のポジション）</h4>
+      <div class="pos-val" style="color:var(--accent); font-size:14px;">
+        「毎日の農場判断を自動化する」<br>
+        「他農場との比較で改善を促す」<br>
+        「経営目標を現場アクションに翻訳する」
+      </div>
+    </div>
+  </div>
+
+  <h3>「AI農場長」の定義</h3>
+  <p>農場長の仕事は大きく3つ：<strong>①状況把握</strong>→<strong>②問題特定</strong>→<strong>③判断・指示</strong>。現在のPorkerは①を担う。AI農場長は②③まで自動化することで、農場長の「考える時間」を創出し、農場全体のパフォーマンスを底上げする。</p>
+
+  <div class="flow">
+    <div class="flow-box">データ収集<br><small>IoT・手入力</small></div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-box accent">状況把握<br><small>現在のPorker</small></div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-box green">問題特定<br><small>AI農場長（新規）</small></div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-box green">判断・指示提案<br><small>AI農場長（新規）</small></div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-box">農場長が実行<br><small>人間の最終判断</small></div>
+  </div>
+
+  <div class="callout">
+    <strong>ネーミング戦略：</strong>「AI農場長」という名称は既存農場長の自己否定感を生む可能性あり。<br>
+    → 推奨表現：<strong>「AI副農場長」「農場長のコパイロット」「農場の右腕AI」</strong><br>
+    → 英語：Porker AI Copilot / Porker AI Navigator（Buildots「Dot」のネーミング参考）
+  </div>
+
+  <h3>競合との差別化マップ（再整理）</h3>
+  <table>
+    <thead><tr><th>機能軸</th><th>PigGuard</th><th>EveryPig</th><th>PigVision</th><th>Porker（現在）</th><th>Porker AI農場長（目標）</th></tr></thead>
+    <tbody>
+      <tr><td>データ収集・記録</td><td>映像のみ</td><td>◎（手入力）</td><td>◎</td><td>◎◎</td><td>◎◎</td></tr>
+      <tr><td>リアルタイム監視</td><td>◎◎</td><td>△</td><td>△</td><td>△</td><td>○（アラート自動化）</td></tr>
+      <tr><td>ベンチマーク比較</td><td>✗</td><td>✗</td><td>○（世界基準）</td><td>△</td><td><strong>◎◎（リアルタイム偏差値）</strong></td></tr>
+      <tr><td>AI自律提案</td><td>△（アラートのみ）</td><td>○（AI獣医）</td><td>✗</td><td>✗</td><td><strong>◎◎（毎日の行動提案）</strong></td></tr>
+      <tr><td>経営分析</td><td>✗</td><td>✗</td><td>△</td><td>△</td><td><strong>◎◎（KGI↔KPI翻訳）</strong></td></tr>
+      <tr><td>国内慣行対応</td><td>✗</td><td>✗</td><td>△</td><td>◎◎</td><td>◎◎</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- ===== 2. 3フェーズ設計 ===== -->
+<div class="section" id="phase-roadmap">
+  <div class="section-label">SECTION 02</div>
+  <h2>3フェーズ設計：ノートブック構想の具体化</h2>
+
+  <div class="phase-timeline">
+    <div class="phase-col ph1">
+      <div class="ph-num" style="color:var(--blue);">PHASE 1</div>
+      <h4>AIベンチマーク</h4>
+      <div class="ph-period">〜6ヶ月（MVP）</div>
+      <p style="font-size:12px; color:#555; margin-bottom:8px;">Porkerデータを「動かす」最初のステップ。比較することで農場の課題が見える化される</p>
+      <ul>
+        <li>リアルタイム偏差値スコア</li>
+        <li>セグメント別ランキング（規模・地域・品種）</li>
+        <li>繁殖領域の課題分析レポート自動生成</li>
+        <li>匿名他社事例マッチング（β版）</li>
+        <li>予測型ベンチマーク（3ヶ月先予測）</li>
+      </ul>
+    </div>
+    <div class="phase-col ph2">
+      <div class="ph-num" style="color:var(--green);">PHASE 2</div>
+      <h4>AI農場長コパイロット</h4>
+      <div class="ph-period">6〜12ヶ月</div>
+      <p style="font-size:12px; color:#555; margin-bottom:8px;">大規模生産者向けに毎日の判断支援。フリーデン等インテグレーター向け高単価コンサル型を含む</p>
+      <ul>
+        <li>毎朝のシフト開始ブリーフィング</li>
+        <li>疾病リスク早期警告（3〜5日前）</li>
+        <li>KGI→KPI翻訳エージェント</li>
+        <li>出荷最適化AI提案</li>
+        <li>稟議書・ROI試算書自動生成</li>
+        <li>LINE/チャット連携（AI農場長との対話）</li>
+      </ul>
+    </div>
+    <div class="phase-col ph3">
+      <div class="ph-num" style="color:#856404;">PHASE 3</div>
+      <h4>農場ペルソナAI（AI農場長完成形）</h4>
+      <div class="ph-period">1〜2年後</div>
+      <p style="font-size:12px; color:#555; margin-bottom:8px;">農場ごとのデータと農場長のノウハウを学習した、その農場だけのパーソナライズドAI</p>
+      <ul>
+        <li>農場ペルソナ構築（農場長のノウハウAI化）</li>
+        <li>デジタルツイン農場（シナリオシミュレーション）</li>
+        <li>飼料・繁殖の自動最適化</li>
+        <li>IoTセンサー統合（SoundTalks連携等）</li>
+        <li>獣医師エコシステム（プロ版ライセンス）</li>
+        <li>グローバル展開（東南アジア農場向け）</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="callout">
+    <strong>フェーズ設計の根拠：</strong>
+    Phase 1のベンチマークは「Porkerの既存データ」だけで実装可能で技術リスクが低い。Phase 1が農場の「現状認識の欲求」を満たすことで、Phase 2の「改善したい欲求」と課金動機が自然に生まれる。Phase 3は農場固有のデータ蓄積量が増えてから初めて精度が出る機能のため、後回しが正解。
+  </div>
+</div>
+
+<!-- ===== 3. アイデア詳細10選 ===== -->
+<div class="section" id="ideas">
+  <div class="section-label">SECTION 03</div>
+  <h2>アイデア詳細10選：根拠と実装ポイント</h2>
+
+  <h3>A. AIベンチマーク強化（Phase 1）</h3>
+  <div class="idea-grid">
+
+    <div class="idea-card high">
+      <div class="idea-header">
+        <div class="idea-num">IDEA 01 ｜ <span class="tag tag-phase1">Phase 1</span> <span class="tag tag-high">最優先</span></div>
+        <h4>リアルタイム偏差値方式</h4>
+      </div>
+      <div class="idea-body">
+        <p>全国・同規模・同地域のPorkerユーザー農場のデータをリアルタイム集計し、農場のKPIを「偏差値」形式で常時表示。PigINFOが「四半期に1回の通知表」だとすれば、これは「毎日更新のスマートウォッチ」。</p>
+        <p><strong>表示例：</strong><br>
+        繁殖偏差値 <span style="color:var(--green); font-weight:bold;">62</span>（上位24%）<br>
+        肥育偏差値 <span style="color:var(--accent); font-weight:bold;">41</span>（下位32%）<br>
+        → 「ボトルネックは離乳後事故率。業界平均より2.3%高い」</p>
+        <p><strong>セグメント軸：</strong>全国 / 同規模（±100頭）/ 同地域 / 同品種 の4軸切り替え</p>
+        <div class="ref-bar">参考：PigINFO（静的ベンチマーク）→ SaaS型ヘルスチェックスコアに進化させる。日本SPF豚協会の総合生産指数をリアルタイム化するイメージ</div>
+      </div>
+    </div>
+
+    <div class="idea-card high">
+      <div class="idea-header">
+        <div class="idea-num">IDEA 02 ｜ <span class="tag tag-phase1">Phase 1</span></div>
+        <h4>予測型ベンチマーク（未来シミュレーション付き）</h4>
+      </div>
+      <div class="idea-body">
+        <p>現在地だけでなく「このペースが続くと3ヶ月後・6ヶ月後にどこにいるか」を予測表示。危機感の喚起と「対策を打った場合の改善シナリオ」の両方を提示。</p>
+        <p><strong>2パターンの表示：</strong><br>
+        ❶ 現状維持シナリオ：「6ヶ月後に下位30%に転落」<br>
+        ❷ 対策実行シナリオ：「対策Aを実行すると3ヶ月後に上位25%」</p>
+        <p>対策Aは匿名他社事例（IDEA 03）と連動させ、「類似農場が実施して効果があった施策」を自動提示する。</p>
+        <div class="ref-bar">参考：Syngenta GenAI（収量予測精度95%）+ AWS IoT SiteWise（OEEリアルタイム算出）→ 製造業の生産性予測モデルを養豚KPIに適用</div>
+      </div>
+    </div>
+
+    <div class="idea-card high">
+      <div class="idea-header">
+        <div class="idea-num">IDEA 03 ｜ <span class="tag tag-phase1">Phase 1</span> <span class="tag tag-high">最優先</span></div>
+        <h4>匿名他社事例マッチングエンジン</h4>
+      </div>
+      <div class="idea-body">
+        <p>「自農場と類似条件の農場が、同じ課題をどう解決したか」を匿名で提示する。農場長の「しがらみ（同業者に相談できない）」問題を解決するエンジン。</p>
+        <p><strong>表示例：</strong><br>
+        「母豚200頭 × 非SPF × 九州地方の類似農場3件で、<strong>分娩率を+5%改善</strong>した事例があります。共通施策：離乳週齢を21日→28日に変更」</p>
+        <p><strong>マッチング条件：</strong>農場規模 / 地域 / 品種 / 季節 / 現状KPI水準 の多軸マッチング</p>
+        <div class="ref-bar">参考：Cloudfarms（クラウド統合管理でユーザー間ベンチマーク）+ ProductBoard AI（フィードバック自動紐付け）→ 農場間の知見共有エンジンとして差別化</div>
+      </div>
+    </div>
+
+    <div class="idea-card high">
+      <div class="idea-header">
+        <div class="idea-num">IDEA 04 ｜ <span class="tag tag-phase1">Phase 1</span> <span class="tag tag-phase2">Phase 2</span></div>
+        <h4>AIコパイロット（Buildots「Dot」方式）</h4>
+      </div>
+      <div class="idea-body">
+        <p>農場長がチャットで自然言語質問→AIがPorkerデータ全体を横断分析して回答。「なぜ？」「何をすべきか？」まで踏み込む、農場版AIアシスタント。</p>
+        <p><strong>質問例：</strong><br>
+        「今週の離乳率が落ちた原因は？」<br>
+        → AI：「豚舎3号棟の夜間温度が26℃超の日が3日続いており、同条件の過去データと比較すると離乳率との相関が0.78。換気量増加を推奨します」</p>
+        <p>建設AIのBuildotsが現場監督向けに「Dot」というAIアシスタントを展開し、現場データの自然言語検索・分析を実現している手法の養豚版。</p>
+        <div class="ref-bar">参考：Buildots「Dot」（建設AI現場監督）+ Retail Brain（小売AI店長）→ 現場データの自然言語インターフェース化</div>
+      </div>
+    </div>
+  </div>
+
+  <h3>B. AI農場長コパイロット（Phase 2）</h3>
+  <div class="idea-grid">
+
+    <div class="idea-card high">
+      <div class="idea-header">
+        <div class="idea-num">IDEA 05 ｜ <span class="tag tag-phase2">Phase 2</span> <span class="tag tag-high">最優先</span></div>
+        <h4>シフト開始ブリーフィング（毎朝の自動生成）</h4>
+      </div>
+      <div class="idea-body">
+        <p>毎朝6時に、AIがその日の農場ブリーフィングを自動生成してLINE/アプリに配信。農場長・スタッフが朝の作業前にスマホで確認できる形式。</p>
+        <p><strong>ブリーフィング構成：</strong></p>
+        <p>🐷 <strong>今日の注目豚房</strong>（分娩予定、ワクチン接種、体重測定）<br>
+        ⚠️ <strong>昨日の異常値サマリー</strong>と対応推奨<br>
+        🌡️ <strong>今日の気象予報</strong>に基づく換気・暑熱対策<br>
+        📊 <strong>週次KPI進捗</strong>（目標対比）<br>
+        💡 <strong>今週の改善アクション1件</strong>（ベンチマークから自動抽出）</p>
+        <div class="ref-bar">参考：物流AI倉庫管理「シフト開始ブリーフ」自動生成 → 養豚版「農場モーニングレポート」。毎日の習慣にさせることでチャーン防止にもなる</div>
+      </div>
+    </div>
+
+    <div class="idea-card high">
+      <div class="idea-header">
+        <div class="idea-num">IDEA 06 ｜ <span class="tag tag-phase2">Phase 2</span> <span class="tag tag-high">最優先</span></div>
+        <h4>KGI→KPI翻訳 ＋ 稟議書自動生成</h4>
+      </div>
+      <div class="idea-body">
+        <p>「経営の言葉」と「現場の言葉」を双方向に翻訳するエージェント。大規模インテグレーター（フリーデン等）の農場長が、本社への提案を通しやすくなる機能。</p>
+        <p><strong>下向き翻訳（本社→現場）：</strong><br>
+        本社「年間PSYを+2改善しろ」<br>
+        → AI「週次の分娩率チェックリスト生成」「離乳後3日間の特別観察プロトコル」</p>
+        <p><strong>上向き翻訳（現場→本社）：</strong><br>
+        現場「自動給餌器が故障頻発」<br>
+        → AI「設備投資ROI試算書」「3年間の費用対効果レポート」「競合他社への設備入れ替え提案書」を自動生成</p>
+        <div class="ref-bar">参考：三井不動産「社長AIエージェント」（経営者の判断基準をAIに学習）+ Cognizant AI Digital Twins → 農場長が本社に「刺さる表現」で稟議を通せるようにする</div>
+      </div>
+    </div>
+
+    <div class="idea-card">
+      <div class="idea-header">
+        <div class="idea-num">IDEA 07 ｜ <span class="tag tag-phase2">Phase 2</span></div>
+        <h4>WhatsApp方式 LINE連携（農場長対話AI）</h4>
+      </div>
+      <div class="idea-body">
+        <p>PCが不得意なスタッフ・農場長向けに、LINEでAI農場長と自然言語で対話できる機能。写真を送ると豚の状態を分析、データを聞くとPorkerから即座に返答。</p>
+        <p><strong>ユースケース：</strong><br>
+        写真送信→「この豚、呼吸器疾患のリスクスコア：高。獣医師への相談を推奨」<br>
+        「今週のFCRどう？」→「先週比+0.2。同規模農場の平均より0.15高い状態」<br>
+        外国人スタッフ向け多言語対応（ベトナム語・ミャンマー語）</p>
+        <div class="ref-bar">参考：Farmonaut Jeevn AI（WhatsApp経由の農業アドバイザリー）→ IT習熟度が低い農業従事者へのアクセシビリティ向上モデル</div>
+      </div>
+    </div>
+
+    <div class="idea-card">
+      <div class="idea-header">
+        <div class="idea-num">IDEA 08 ｜ <span class="tag tag-phase2">Phase 2</span> <span class="tag tag-phase3">Phase 3</span></div>
+        <h4>獣医師エコシステム（プロ版ライセンス）</h4>
+      </div>
+      <div class="idea-body">
+        <p>AI農場長が作成した分析レポートを、獣医師・コンサルタント向けのプロダッシュボードとして提供。獣医師にとっても「農場訪問前に状況把握できる」ツールとして価値がある。</p>
+        <p><strong>仕組み：</strong><br>
+        担当農場のAIレポート自動配信 → 獣医師が来場前に課題把握 → 効率的な診察 → 獣医師のフィードバックがAI学習データに還元（精度向上）</p>
+        <p><strong>マネタイズ：</strong>獣医師・コンサル向けプロライセンス月額¥10,000〜30,000</p>
+        <div class="ref-bar">参考：ノートブックの「既存コンサル棲み分け議論」→ 競合ではなく共存・連携。獣医師をエコシステムに取り込む</div>
+      </div>
+    </div>
+  </div>
+
+  <h3>C. Phase 3 長期構想</h3>
+  <div class="idea-grid">
+
+    <div class="idea-card low">
+      <div class="idea-header">
+        <div class="idea-num">IDEA 09 ｜ <span class="tag tag-phase3">Phase 3</span></div>
+        <h4>デジタルツイン農場（シナリオシミュレーション）</h4>
+      </div>
+      <div class="idea-body">
+        <p>農場の物理的状態をデジタル空間に再現し、「もし〇〇したら」のシナリオシミュレーションを可能にする。</p>
+        <p><strong>シミュレーション例：</strong><br>
+        「豚舎Aの密度を10%下げた場合の事故率変化」<br>
+        「スタッフを1名増員した場合のROI計算」<br>
+        「飼料配合をAからBに変えた場合の6ヶ月後FCR予測」</p>
+        <div class="ref-bar">参考：Cognizant AI Digital Twins（製造業）+ Maximus（養豚施設制御）→ 製造業で実証済みのデジタルツイン概念を農場に転用。Phase 2のデータ蓄積量が前提</div>
+      </div>
+    </div>
+
+    <div class="idea-card low">
+      <div class="idea-header">
+        <div class="idea-num">IDEA 10 ｜ <span class="tag tag-phase3">Phase 3</span></div>
+        <h4>SoundTalks方式 IoTセンサー統合</h4>
+      </div>
+      <div class="idea-body">
+        <p>Porkerを「頭脳」、IoTセンサーを「感覚器官」として統合。既存センサーメーカーとの提携でデータ収集を自動化し、AI農場長の精度を飛躍的に向上させる。</p>
+        <p><strong>統合候補センサー：</strong><br>
+        🔊 SoundTalks（AI音声解析で咳・呼吸器疾患早期検出）<br>
+        👁️ CattleEye相当（映像解析で歩行異常・発情検出）<br>
+        🌡️ 環境センサー（温湿度・CO2・アンモニア）</p>
+        <div class="ref-bar">参考：SoundTalks（ベルギー発、豚の音声AIで世界展開）+ CattleEye（牛向け歩行分析）→ センサー会社との提携で自社開発コストを回避</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== 4. 優先度マトリックス ===== -->
+<div class="section" id="priority">
+  <div class="section-label">SECTION 04</div>
+  <h2>優先度マトリックス：何から着手するか</h2>
+
+  <table>
+    <thead>
+      <tr><th>優先度</th><th>アイデア</th><th>フェーズ</th><th>実装難易度</th><th>インパクト</th><th>根拠</th></tr>
+    </thead>
+    <tbody>
+      <tr style="background:#fde8e8;">
+        <td><strong>🔴 最優先</strong></td>
+        <td>IDEA 01：リアルタイム偏差値</td>
+        <td>Phase 1</td>
+        <td>低（既存データのみ）</td>
+        <td>高（差別化の核心）</td>
+        <td>Porkerデータがあれば即実装可能。競合に存在しない</td>
+      </tr>
+      <tr style="background:#fde8e8;">
+        <td><strong>🔴 最優先</strong></td>
+        <td>IDEA 03：匿名事例マッチング</td>
+        <td>Phase 1</td>
+        <td>中</td>
+        <td>高（「しがらみ解決」）</td>
+        <td>ユーザー数が多いほど精度向上。早期着手でネットワーク効果</td>
+      </tr>
+      <tr style="background:#fde8e8;">
+        <td><strong>🔴 最優先</strong></td>
+        <td>IDEA 05：シフト開始ブリーフィング</td>
+        <td>Phase 2</td>
+        <td>中</td>
+        <td>高（毎日の習慣化）</td>
+        <td>毎日使わせることでチャーン防止。LINEで配信し導線を確立</td>
+      </tr>
+      <tr style="background:#fff4e8;">
+        <td><strong>🟠 高</strong></td>
+        <td>IDEA 04：AIコパイロット（チャット）</td>
+        <td>Phase 1-2</td>
+        <td>中</td>
+        <td>高（UX差別化）</td>
+        <td>LLM活用で実装ハードル下がっている。Porkerデータを知識ベースに</td>
+      </tr>
+      <tr style="background:#fff4e8;">
+        <td><strong>🟠 高</strong></td>
+        <td>IDEA 06：KGI↔KPI翻訳</td>
+        <td>Phase 2</td>
+        <td>中〜高</td>
+        <td>高（大規模農場向け高単価）</td>
+        <td>フリーデン等インテグレーター向けEnterprise契約の決め手</td>
+      </tr>
+      <tr style="background:#fff4e8;">
+        <td><strong>🟠 高</strong></td>
+        <td>IDEA 02：予測型ベンチマーク</td>
+        <td>Phase 1</td>
+        <td>中〜高</td>
+        <td>高（行動動機の喚起）</td>
+        <td>IDEA 01の偏差値と組み合わせることで「現在地＋未来予測」の完成</td>
+      </tr>
+      <tr>
+        <td><strong>🟡 中</strong></td>
+        <td>IDEA 07：LINE連携</td>
+        <td>Phase 2</td>
+        <td>低</td>
+        <td>中（アクセシビリティ）</td>
+        <td>既存LINEインフラ活用。IT習熟度が低い農家へのリーチ</td>
+      </tr>
+      <tr>
+        <td><strong>🟡 中</strong></td>
+        <td>IDEA 08：獣医師エコシステム</td>
+        <td>Phase 2-3</td>
+        <td>低〜中</td>
+        <td>中（収益源多様化）</td>
+        <td>AI農場長の完成度が上がってから。獣医師との関係構築に時間が必要</td>
+      </tr>
+      <tr>
+        <td><strong>⚪ 低</strong></td>
+        <td>IDEA 09：デジタルツイン</td>
+        <td>Phase 3</td>
+        <td>高</td>
+        <td>高（長期差別化）</td>
+        <td>技術成熟とデータ蓄積が前提。2〜3年後の検討</td>
+      </tr>
+      <tr>
+        <td><strong>⚪ 低</strong></td>
+        <td>IDEA 10：IoTセンサー統合</td>
+        <td>Phase 3</td>
+        <td>高</td>
+        <td>高（精度向上）</td>
+        <td>パートナーシップ戦略確定後。自社開発は不要</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="callout">
+    <strong>着手シーケンスの推奨：</strong>
+    IDEA 01（偏差値）→ IDEA 05（朝ブリーフィング）→ IDEA 03（匿名マッチング）→ IDEA 04（コパイロットチャット）→ IDEA 02（未来予測）→ IDEA 06（KGI翻訳）。
+    前半3つは<strong>既存Porkerデータのみで実装可能</strong>でリスクが低い。
+  </div>
+</div>
+
+<!-- ===== 5. 価格設計 ===== -->
+<div class="section" id="pricing">
+  <div class="section-label">SECTION 05</div>
+  <h2>価格設計：フリーミアム→段階課金モデル</h2>
+
+  <div class="pricing-tiers">
+    <div class="pt pt-free">
+      <h4>FREE</h4>
+      <div class="price">¥0</div>
+      <small>Porker基本機能</small>
+      <ul style="margin-top:12px;">
+        <li class="yes">データ記録・入力</li>
+        <li class="yes">基本ダッシュボード</li>
+        <li class="yes">農場1件</li>
+        <li class="yes">簡易ベンチマーク（四半期）</li>
+        <li class="no">リアルタイム偏差値</li>
+        <li class="no">AIアラート</li>
+        <li class="no">AIチャット</li>
+      </ul>
+    </div>
+    <div class="pt pt-basic">
+      <h4>BENCHMARK</h4>
+      <div class="price" style="color:var(--blue);">¥9,800<small style="font-size:13px;">/月</small></div>
+      <small>Phase 1機能セット</small>
+      <ul style="margin-top:12px;">
+        <li class="yes">リアルタイム偏差値</li>
+        <li class="yes">予測型ベンチマーク</li>
+        <li class="yes">匿名事例マッチング</li>
+        <li class="yes">月次課題分析レポート</li>
+        <li class="yes">メールアラート</li>
+        <li class="no">AIコパイロット（チャット）</li>
+        <li class="no">朝ブリーフィング</li>
+      </ul>
+    </div>
+    <div class="pt pt-pro">
+      <h4>AI COPILOT</h4>
+      <div class="price" style="color:var(--green);">¥24,800<small style="font-size:13px;">/月</small></div>
+      <small>Phase 2機能セット</small>
+      <ul style="margin-top:12px;">
+        <li class="yes">BENCHMARKの全機能</li>
+        <li class="yes">毎朝シフトブリーフィング</li>
+        <li class="yes">AIコパイロットチャット</li>
+        <li class="yes">疾病リスク早期警告</li>
+        <li class="yes">出荷最適化提案</li>
+        <li class="yes">LINE通知連携</li>
+        <li class="no">稟議書自動生成</li>
+      </ul>
+    </div>
+    <div class="pt pt-ent">
+      <h4>ENTERPRISE</h4>
+      <div class="price" style="color:var(--accent);">¥50,000+<small style="font-size:13px;">/月〜</small></div>
+      <small>Phase 2-3（要相談）</small>
+      <ul style="margin-top:12px;">
+        <li class="yes">AI COPILOTの全機能</li>
+        <li class="yes">KGI↔KPI翻訳</li>
+        <li class="yes">稟議書自動生成</li>
+        <li class="yes">多農場一括管理</li>
+        <li class="yes">獣医師プロダッシュボード</li>
+        <li class="yes">カスタムAIモデル</li>
+        <li class="yes">専任サポート</li>
+      </ul>
+    </div>
+  </div>
+
+  <table>
+    <thead><tr><th>価格設定の根拠</th><th>詳細</th></tr></thead>
+    <tbody>
+      <tr><td>¥9,800（Benchmark）</td><td>ITreview調査：国内養豚管理SaaS相場¥5,000〜30,000の中間。NavFarm月$600（¥90,000）と比べて圧倒的割安感</td></tr>
+      <tr><td>¥24,800（AI Copilot）</td><td>EveryPigのAI機能追加モデルを参考。Farmonaut $64.99/月の約4倍＝AI付加価値の差</td></tr>
+      <tr><td>¥50,000+（Enterprise）</td><td>フリーデン等インテグレーター（農場20件以上管理）向け。1農場当たり¥2,500/月換算で許容されやすい水準</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- ===== 6. エコシステム ===== -->
+<div class="section" id="ecosystem">
+  <div class="section-label">SECTION 06</div>
+  <h2>エコシステム設計：誰を巻き込むか</h2>
+
+  <div class="ecosystem">
+    <div class="eco-center">
+      <p>Porker<br>AI農場長<br>（データ基盤）</p>
+    </div>
+    <div class="eco-nodes">
+      <div class="eco-node">
+        <div class="icon">🐷</div>
+        <p><strong style="color:#fff;">養豚農場</strong><br>データ提供者＆受益者<br>月額課金ユーザー</p>
+      </div>
+      <div class="eco-node">
+        <div class="icon">🩺</div>
+        <p><strong style="color:#fff;">獣医師・コンサル</strong><br>プロライセンス<br>精度向上に貢献</p>
+      </div>
+      <div class="eco-node">
+        <div class="icon">🏭</div>
+        <p><strong style="color:#fff;">インテグレーター</strong><br>フリーデン等<br>Enterprise契約</p>
+      </div>
+      <div class="eco-node">
+        <div class="icon">📡</div>
+        <p><strong style="color:#fff;">IoTセンサーメーカー</strong><br>SoundTalks等<br>API連携パートナー</p>
+      </div>
+      <div class="eco-node">
+        <div class="icon">🏛️</div>
+        <p><strong style="color:#fff;">農水省・農研機構</strong><br>データ活用協定<br>PigINFO連携</p>
+      </div>
+      <div class="eco-node">
+        <div class="icon">🌾</div>
+        <p><strong style="color:#fff;">JA・農協</strong><br>導入支援パートナー<br>中小農家へのリーチ</p>
+      </div>
+    </div>
+  </div>
+
+  <h3>ステークホルダー別の価値提供</h3>
+  <table>
+    <thead><tr><th>ステークホルダー</th><th>現在の課題</th><th>Porker AI農場長が提供する価値</th><th>取り込み方</th></tr></thead>
+    <tbody>
+      <tr><td><strong>養豚農場（中規模）</strong></td><td>データはあるが使えていない。農場長の属人的判断に依存</td><td>毎日の判断負荷を軽減。ベンチマークで改善方向が明確に</td><td>Porker既存ユーザーへのアップセル</td></tr>
+      <tr><td><strong>インテグレーター</strong></td><td>多農場の一括管理・パフォーマンス比較が困難</td><td>グループ農場の統合ダッシュボード・KPI自動集計</td><td>Enterprise契約・専任サポート</td></tr>
+      <tr><td><strong>獣医師</strong></td><td>農場訪問前の事前情報が不足。診察が非効率</td><td>訪問前にAIレポートで課題把握。フォローアップも効率化</td><td>プロライセンス提供・精度向上への貢献を報酬に</td></tr>
+      <tr><td><strong>JA・農協</strong></td><td>指導員のリソース不足。農場の生産性向上が停滞</td><td>AI農場長で農家の自立的改善を支援。指導員の効率化</td><td>導入支援パートナー契約・紹介フィー</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- ===== 7. 検証仮説 ===== -->
+<div class="section" id="hypothesis">
+  <div class="section-label">SECTION 07</div>
+  <h2>最優先で検証すべき仮説</h2>
+
+  <div class="hypothesis">
+    <div class="hyp-label">仮説 01 ｜ Phase 1 着手前に検証</div>
+    <h4>「リアルタイム偏差値」は農場長の行動動機を生むか？</h4>
+    <p><strong>仮説：</strong>農場長は自農場の「業界内順位」を知ることで、改善行動への動機が生まれる</p>
+    <p><strong>検証方法：</strong>既存Porkerユーザー20農場に対し、「あなたの農場のPSY偏差値は47（下位40%）です」と事実を伝えたときの反応をユーザーインタビューで確認</p>
+    <p><strong>成功指標：</strong>「改善したい」「どうすればいいか知りたい」という反応が70%以上</p>
+    <p><strong>失敗条件と対応：</strong>「気にしない」「どうせ変わらない」が多い場合 → 比較軸を変える（全国 vs 地域 vs 同規模の段階切り替えで反応差を検証）</p>
+  </div>
+
+  <div class="hypothesis">
+    <div class="hyp-label">仮説 02 ｜ Phase 1-2 並行検証</div>
+    <h4>「朝のブリーフィング」は農場長の習慣になるか？</h4>
+    <p><strong>仮説：</strong>毎朝LINEで農場状況サマリーを受け取ることで、AIツールの日常的利用が定着する</p>
+    <p><strong>検証方法：</strong>10農場×4週間のパイロット。毎朝8時にLINEで簡易ブリーフィングを配信し、開封率・実行率・週次継続率をトラッキング</p>
+    <p><strong>成功指標：</strong>4週後の開封率60%以上、「内容が役立った」評価70%以上</p>
+    <p><strong>副次検証：</strong>ブリーフィングを受けた農場と受けない農場で、月次のPorkerログイン回数に差が出るか</p>
+  </div>
+
+  <div class="hypothesis">
+    <div class="hyp-label">仮説 03 ｜ Phase 2 前に検証</div>
+    <h4>¥9,800/月の追加課金に支払い意欲はあるか？</h4>
+    <p><strong>仮説：</strong>「業界内順位がわかる」「改善事例が見られる」価値に対し、月額¥9,800の追加課金は許容される</p>
+    <p><strong>検証方法：</strong>仮説01の検証で「改善したい」と回答した農場長に対し、「この機能を月額¥9,800で使えるなら払いますか？」を直接ヒアリング（N=30農場）</p>
+    <p><strong>成功指標：</strong>30%以上が「払う」または「条件次第で払う」と回答</p>
+    <p><strong>代替検証：</strong>1ヶ月無料→有料転換の実際のコンバージョン率（目標：20%以上）</p>
+  </div>
+
+  <div class="hypothesis">
+    <div class="hyp-label">仮説 04 ｜ Phase 1 技術検証</div>
+    <h4>Porkerの既存データで疾病予測は精度が出るか？</h4>
+    <p><strong>仮説：</strong>体重変化率・環境データ・記録データの組み合わせで、疾病発生を3〜5日前に予測できる</p>
+    <p><strong>検証方法：</strong>過去2年分のPorkerデータでバックテスト。疾病発生月のデータを正解ラベルとして機械学習モデルを評価</p>
+    <p><strong>成功指標：</strong>感度（再現率）60%以上、偽陽性率20%未満</p>
+    <p><strong>不足データの特定：</strong>精度不足の場合、どのデータ項目（IoTセンサー・体温・音声等）を追加すれば改善するかを明確にする</p>
+  </div>
+</div>
+
+<!-- ===== 8. 開発インプット ===== -->
+<div class="section" id="dev">
+  <div class="section-label">SECTION 08</div>
+  <h2>開発チームへのインプット：何を作るか</h2>
+
+  <h3>Phase 1 MVP 機能仕様（優先順）</h3>
+  <table>
+    <thead><tr><th>#</th><th>機能</th><th>データソース</th><th>AIモデル</th><th>UI</th><th>優先度</th></tr></thead>
+    <tbody>
+      <tr><td>1</td><td>リアルタイム偏差値スコア</td><td>Porker全ユーザーの集計（匿名化）</td><td>統計処理（偏差値計算）</td><td>ダッシュボードのスコア表示</td><td><span class="badge badge-new">最優先</span></td></tr>
+      <tr><td>2</td><td>セグメント別ランキング</td><td>同上（規模・地域・品種タグ付き）</td><td>フィルタリング＋集計</td><td>セグメント切り替えUI</td><td><span class="badge badge-new">最優先</span></td></tr>
+      <tr><td>3</td><td>月次課題分析レポート自動生成</td><td>自農場の過去データ</td><td>LLM（テンプレート＋データ差し込み）</td><td>PDF/メール出力</td><td><span class="badge badge-new">高</span></td></tr>
+      <tr><td>4</td><td>匿名事例マッチング（シンプル版）</td><td>Porker全ユーザーの施策記録</td><td>類似度計算（コサイン類似度）</td><td>「類似農場の改善事例」カード表示</td><td><span class="badge badge-new">高</span></td></tr>
+      <tr><td>5</td><td>予測型ベンチマーク（3ヶ月先）</td><td>自農場の時系列データ</td><td>時系列予測（Prophet/LSTM）</td><td>予測グラフ＋シナリオ比較</td><td><span class="badge badge-exist">中</span></td></tr>
+    </tbody>
+  </table>
+
+  <h3>Phase 2 追加機能仕様</h3>
+  <table>
+    <thead><tr><th>#</th><th>機能</th><th>データソース</th><th>AIモデル</th><th>UI/配信</th><th>優先度</th></tr></thead>
+    <tbody>
+      <tr><td>1</td><td>朝のシフトブリーフィング自動生成</td><td>前日のPorkerデータ＋気象API</td><td>LLM（ルールベース＋生成）</td><td>LINE Bot / プッシュ通知</td><td><span class="badge badge-new">最優先</span></td></tr>
+      <tr><td>2</td><td>AIコパイロットチャット</td><td>Porkerデータ（RAG）</td><td>LLM＋RAG（農場データを知識ベース化）</td><td>アプリ内チャットUI</td><td><span class="badge badge-new">高</span></td></tr>
+      <tr><td>3</td><td>疾病リスク早期警告</td><td>体重変化率・環境・記録</td><td>異常検知モデル（Isolation Forest等）</td><td>アラートカード＋LINE通知</td><td><span class="badge badge-new">高</span></td></tr>
+      <tr><td>4</td><td>出荷最適化提案</td><td>体重推移＋出荷記録</td><td>予測モデル（出荷日×体重×コスト）</td><td>カレンダーUI＋推奨バッジ</td><td><span class="badge badge-exist">中</span></td></tr>
+      <tr><td>5</td><td>稟議書・ROI試算書自動生成</td><td>コスト記録＋設備データ</td><td>LLM＋財務計算テンプレート</td><td>Word/PDF出力</td><td><span class="badge badge-partner">Enterprise限定</span></td></tr>
+    </tbody>
+  </table>
+
+  <h3>技術スタックの推奨方針</h3>
+  <table>
+    <thead><tr><th>レイヤー</th><th>推奨アプローチ</th><th>根拠</th></tr></thead>
+    <tbody>
+      <tr><td>LLM</td><td>Claude API（claude-sonnet-4-6）+ RAG（農場データ）</td><td>日本語精度・コスト・API安定性。RAGでPorkerデータを知識ベース化</td></tr>
+      <tr><td>予測モデル</td><td>Prophet（時系列）+ Isolation Forest（異常検知）をPythonで実装</td><td>農場データの季節性に強いProphet。軽量で解釈しやすい異常検知</td></tr>
+      <tr><td>ベンチマーク集計</td><td>BigQueryまたはRedshift（集計専用）+ 差分更新バッチ</td><td>全ユーザーデータの集計は定期バッチで処理。リアルタイム性はキャッシュで担保</td></tr>
+      <tr><td>LINE連携</td><td>LINE Messaging API（既存）</td><td>国内農業従事者の最多ツール。Bot設定でブリーフィング配信が容易</td></tr>
+      <tr><td>匿名化処理</td><td>差分プライバシー + k-匿名性（農場規模k≥5）</td><td>農場情報の機密性保護。ベンチマーク集計の前処理として必須</td></tr>
+    </tbody>
+  </table>
+
+  <div class="callout callout-red">
+    <strong>開発上の最重要注意点：</strong>
+    AI農場長の提案は「参考情報」として提示し、最終判断は農場長が行う設計にすること。AIが間違えた場合に農場が損害を受けるリスクを避けるため、初期は「提案の確度（高/中/低）」を必ず表示し、「なぜそう判断したか」の根拠を開示する透明性設計が必要。
+  </div>
+</div>
+
+</div><!-- /main -->
+
+<footer>
+  DX豚舎 ｜ Porker AI農場長 構想深掘りレポート ｜ フェーズ3特集ページ ｜ 2026-03-22 ｜ Confidential
+  <br><br>
+  <a href="../index.html" style="color:var(--blue);">← リサーチインデックスに戻る</a>
+</footer>
+
+</body>
+</html>
