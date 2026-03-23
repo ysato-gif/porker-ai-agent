@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>他業界からの示唆分析（フェーズ2-B）</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Hiragino Kaku Gothic Pro', 'Meiryo', sans-serif; background: #fff; color: #222; padding: 32px; }
+  h1 { font-size: 24px; margin-bottom: 8px; color: #1a1a2e; border-bottom: 3px solid #2a9d8f; padding-bottom: 8px; }
+  h2 { font-size: 18px; margin: 32px 0 12px; color: #1a1a2e; }
+  h3 { font-size: 15px; margin: 16px 0 8px; color: #2a9d8f; }
+  p { font-size: 14px; line-height: 1.7; color: #444; margin-bottom: 8px; }
+  .meta { font-size: 12px; color: #888; margin-bottom: 24px; }
+  .section { border: 1px solid #e9ecef; border-radius: 8px; padding: 20px; margin-bottom: 24px; }
+  table { width: 100%; border-collapse: collapse; margin-bottom: 16px; font-size: 13px; }
+  th { background: #2a9d8f; color: #fff; padding: 10px 8px; text-align: left; }
+  td { padding: 9px 8px; border-bottom: 1px solid #e9ecef; vertical-align: top; }
+  tr:nth-child(even) { background: #f8f9fa; }
+
+  /* 価格モデル図 */
+  .pricing-model { display: flex; gap: 16px; flex-wrap: wrap; margin-bottom: 16px; }
+  .pm-card { flex: 1; min-width: 180px; border: 2px solid #e9ecef; border-radius: 8px; padding: 16px; text-align: center; }
+  .pm-card.recommended { border-color: #2a9d8f; background: #f0faf9; }
+  .pm-card h4 { font-size: 14px; margin-bottom: 8px; }
+  .pm-card .pct { font-size: 28px; font-weight: bold; color: #2a9d8f; }
+  .pm-card p { font-size: 12px; color: #666; margin-top: 4px; }
+
+  /* フリーミアム図 */
+  .freemium-tier { display: flex; gap: 0; margin-bottom: 16px; }
+  .tier { flex: 1; padding: 16px; text-align: center; font-size: 13px; }
+  .tier-free { background: #e8f4f8; border-radius: 8px 0 0 8px; }
+  .tier-basic { background: #d4edda; }
+  .tier-pro { background: #fff3cd; }
+  .tier-enterprise { background: #f8d7da; border-radius: 0 8px 8px 0; }
+  .tier h4 { font-size: 14px; font-weight: bold; margin-bottom: 6px; }
+  .tier .price { font-size: 18px; font-weight: bold; margin: 6px 0; }
+  .tier ul { list-style: none; text-align: left; font-size: 12px; line-height: 1.8; }
+
+  /* 機能アイデア */
+  .idea-card { border-left: 4px solid #2a9d8f; padding: 16px; margin-bottom: 12px; background: #f9fffe; border-radius: 0 8px 8px 0; }
+  .idea-card h4 { font-size: 14px; color: #1a1a2e; margin-bottom: 6px; }
+  .idea-card .ref { font-size: 12px; color: #2a9d8f; margin-top: 6px; }
+  .idea-num { display: inline-block; background: #2a9d8f; color: #fff; border-radius: 50%; width: 24px; height: 24px; text-align: center; line-height: 24px; font-size: 12px; font-weight: bold; margin-right: 8px; }
+
+  /* IoT図 */
+  .iot-flow { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-bottom: 16px; font-size: 13px; }
+  .iot-box { background: #f1f3f5; border-radius: 6px; padding: 8px 14px; white-space: nowrap; }
+  .iot-arrow { color: #2a9d8f; font-size: 18px; }
+  .iot-box.highlight { background: #2a9d8f; color: #fff; }
+
+  .tag { display: inline-block; background: #e8f4f8; border: 1px solid #2a9d8f; color: #2a9d8f; border-radius: 12px; padding: 2px 10px; font-size: 12px; margin: 2px; }
+</style>
+</head>
+<body>
+
+<h1>他業界からの示唆分析 ― フェーズ2-B 分析レポート</h1>
+<p class="meta">作成日：2026-03-22 ｜ データ出典：フェーズ1-C（phase1_cross_industry）</p>
+
+<!-- ========== 1. 価格モデルの傾向 ========== -->
+<div class="section">
+<h2>1. データ活用型AIエージェントの価格モデル傾向</h2>
+
+<h3>1-1. 最も普及している価格モデル</h3>
+<div class="pricing-model">
+  <div class="pm-card recommended">
+    <h4>サブスクリプション（月額）</h4>
+    <div class="pct">58%</div>
+    <p>最多。農業・ヘルスケア・物流で主流</p>
+  </div>
+  <div class="pm-card">
+    <h4>エンタープライズ契約（要問合せ）</h4>
+    <div class="pct">33%</div>
+    <p>大企業向けカスタム。物流・製造業</p>
+  </div>
+  <div class="pm-card">
+    <h4>実装費（一括）</h4>
+    <div class="pct">9%</div>
+    <p>ヘルスケア系の高度ML実装</p>
+  </div>
+</div>
+
+<h3>1-2. フリーミアムの設計パターン（他業界の成功例）</h3>
+<div class="freemium-tier">
+  <div class="tier tier-free">
+    <h4>FREE</h4>
+    <div class="price">¥0</div>
+    <ul>
+      <li>✓ データ記録（手動入力）</li>
+      <li>✓ 基本ダッシュボード</li>
+      <li>✓ 農場1件まで</li>
+      <li>✗ AI分析なし</li>
+      <li>✗ アラートなし</li>
+    </ul>
+  </div>
+  <div class="tier tier-basic">
+    <h4>BASIC</h4>
+    <div class="price">¥5,000/月</div>
+    <ul>
+      <li>✓ AI異常アラート</li>
+      <li>✓ 基本予測（体重推移）</li>
+      <li>✓ レポート出力</li>
+      <li>✗ 経営分析なし</li>
+      <li>✗ 自律提案なし</li>
+    </ul>
+  </div>
+  <div class="tier tier-pro">
+    <h4>PRO</h4>
+    <div class="price">¥15,000/月</div>
+    <ul>
+      <li>✓ 疾病予測AI</li>
+      <li>✓ 出荷タイミング最適化</li>
+      <li>✓ 繁殖スケジュール提案</li>
+      <li>✓ コスト削減提案</li>
+      <li>✗ カスタムAIなし</li>
+    </ul>
+  </div>
+  <div class="tier tier-enterprise">
+    <h4>ENTERPRISE</h4>
+    <div class="price">¥50,000+/月</div>
+    <ul>
+      <li>✓ 全機能フルアクセス</li>
+      <li>✓ カスタムAIモデル</li>
+      <li>✓ API連携</li>
+      <li>✓ 専任サポート</li>
+      <li>✓ 多農場一括管理</li>
+    </ul>
+  </div>
+</div>
+
+<h3>1-3. 農場規模別の推奨価格モデル</h3>
+<table>
+  <thead>
+    <tr><th>農場規模</th><th>母豚数目安</th><th>推奨モデル</th><th>参考月額</th><th>根拠</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>小規模</td><td>〜100頭</td><td>フリーミアム（無料〜BASIC）</td><td>¥0〜5,000</td><td>ITreview調査：日本市場相場¥5,000〜30,000の下限</td></tr>
+    <tr><td>中規模</td><td>100〜500頭</td><td>月額サブスクリプション（PRO）</td><td>¥10,000〜20,000</td><td>Farmonaut型：$64.99/月を参考</td></tr>
+    <tr><td>大規模</td><td>500頭以上</td><td>頭数課金またはエンタープライズ</td><td>¥30,000〜100,000</td><td>HealthArc型：患者数（≒頭数）課金モデル参考</td></tr>
+  </tbody>
+</table>
+</div>
+
+<!-- ========== 2. 機能設計の傾向 ========== -->
+<div class="section">
+<h2>2. 機能設計の傾向（他業界ベストプラクティス）</h2>
+
+<h3>2-1. MVP（最小機能セット）として提供されている共通機能</h3>
+<p>成功しているAIエージェントサービスのMVPに必ず含まれる機能：</p>
+<div style="margin:12px 0;">
+  <span class="tag">データ可視化ダッシュボード</span>
+  <span class="tag">アラート・通知</span>
+  <span class="tag">モバイルアクセス</span>
+  <span class="tag">基本レポート出力</span>
+  <span class="tag">ユーザー管理・権限設定</span>
+</div>
+
+<h3>2-2. アップセルの段階設計（参考：他業界成功パターン）</h3>
+<table>
+  <thead>
+    <tr><th>参考サービス</th><th>業界</th><th>無料〜基本</th><th>→ アップセルポイント</th><th>上位機能</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>monday.com</td><td>物流</td><td>基本ワークフロー</td><td>→ AI自動化で価値訴求</td><td>AI需要予測、高度自動化</td></tr>
+    <tr><td>Farmonaut</td><td>農業</td><td>衛星監視（$2.30〜）</td><td>→ AI予測・レポートで課金</td><td>財務計画AI、IoT統合</td></tr>
+    <tr><td>EveryPig</td><td>養豚</td><td>健康記録・共有</td><td>→ AIアシスタントで課金</td><td>バーチャル獣医24時間</td></tr>
+    <tr><td>HealthArc</td><td>医療</td><td>基本遠隔監視</td><td>→ 患者数増加で自動課金増</td><td>高度分析・EHR連携</td></tr>
+  </tbody>
+</table>
+
+<h3>2-3. 「エージェント型」として成功しているサービスの共通パターン</h3>
+<table>
+  <thead>
+    <tr><th>パターン</th><th>説明</th><th>代表例</th></tr>
+  </thead>
+  <tbody>
+    <tr><td><strong>プロアクティブ通知</strong></td><td>ユーザーが見に来なくてもAIが先に教える</td><td>PigGuard, EveryPig</td></tr>
+    <tr><td><strong>自然言語インターフェース</strong></td><td>「なぜ？」「何をすべきか？」をチャットで回答</td><td>EveryPig（AI獣医）</td></tr>
+    <tr><td><strong>アクション提案</strong></td><td>データ分析から具体的行動を提案する</td><td>Blue Yonder, H2O.ai</td></tr>
+    <tr><td><strong>継続学習</strong></td><td>農場データを学習し精度が上がる</td><td>Senseye, Kinaxis</td></tr>
+  </tbody>
+</table>
+</div>
+
+<!-- ========== 3. データ入力UX ========== -->
+<div class="section">
+<h2>3. データ入力UXのベストプラクティス</h2>
+
+<h3>3-1. IoTデータ取り込みの主流方式</h3>
+<div class="iot-flow">
+  <div class="iot-box">センサー<br>（温湿度・CO2・音）</div>
+  <div class="iot-arrow">→</div>
+  <div class="iot-box">IoTゲートウェイ<br>（WiFi/LoRaWAN）</div>
+  <div class="iot-arrow">→</div>
+  <div class="iot-box highlight">クラウドAPI<br>（REST/MQTT）</div>
+  <div class="iot-arrow">→</div>
+  <div class="iot-box">AI分析エンジン</div>
+  <div class="iot-arrow">→</div>
+  <div class="iot-box">モバイルアプリ<br>（アラート・ダッシュ）</div>
+</div>
+<p>最多：WiFiまたはLoRaWAN→クラウドAPIの経路。ConnectedCow（LoRaWAN）、Afimilk（有線+WiFi）が代表例。</p>
+
+<h3>3-2. 既存システムとのデータ連携方式</h3>
+<table>
+  <thead>
+    <tr><th>連携方式</th><th>普及度</th><th>説明</th><th>養豚での活用例</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>REST API</td><td>★★★★★</td><td>標準的なWebAPI連携</td><td>Porkerデータ→AIエンジンへの送信</td></tr>
+    <tr><td>CSV/Excelインポート</td><td>★★★★☆</td><td>手動・定期バッチ連携</td><td>既存台帳データの移行・統合</td></tr>
+    <tr><td>Webhook</td><td>★★★☆☆</td><td>リアルタイムイベント通知</td><td>PigGuardのアラートをSlack連携</td></tr>
+    <tr><td>EDI/ERP統合</td><td>★★☆☆☆</td><td>基幹系システム連携</td><td>出荷管理・精算システム連携</td></tr>
+    <tr><td>MQTT</td><td>★★★☆☆</td><td>IoTデバイス専用プロトコル</td><td>センサー→クラウド直接送信</td></tr>
+  </tbody>
+</table>
+
+<h3>3-3. ユーザーの手間を最小化している事例</h3>
+<table>
+  <thead>
+    <tr><th>手法</th><th>参考サービス</th><th>効果</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>スキャン入力（QRコード）</td><td>NavFarm（RFID）</td><td>個体識別の手動入力を完全排除</td></tr>
+    <tr><td>音声入力</td><td>EveryPig</td><td>作業中の片手操作で記録完了</td></tr>
+    <tr><td>写真→AI自動判定</td><td>PIGI, PigGuard</td><td>カメラ撮影だけで体重・健康を記録</td></tr>
+    <tr><td>自動センサー収集</td><td>ConnectedCow, Afimilk</td><td>人が何もしなくてもデータが蓄積</td></tr>
+    <tr><td>既存アプリ連携</td><td>monday.com</td><td>使い慣れたツールからデータ取り込み</td></tr>
+  </tbody>
+</table>
+</div>
+
+<!-- ========== 4. 養豚への転用提案 ========== -->
+<div class="section">
+<h2>4. 養豚への転用提案：AIエージェント機能案10選</h2>
+<p>Porkerが保有するデータ（体重/飼料/環境/疾病/繁殖/出荷/経営）を活用した具体的機能案</p>
+
+<div class="idea-card">
+  <h4><span class="idea-num">1</span>疾病発症予測エージェント（3〜5日前警告）</h4>
+  <p>体重変化率・環境データ・行動パターンの複合分析で疾病リスクをスコアリング。閾値超えで自動アラート。</p>
+  <p class="ref">参考：Senseye（Siemens）の予知保全モデル → 設備故障予測を疾病予測に転用</p>
+</div>
+
+<div class="idea-card">
+  <h4><span class="idea-num">2</span>出荷最適日提案エージェント</h4>
+  <p>個体の体重推移予測×市況データ×コスト計算を組み合わせ、利益最大化となる出荷日・出荷先を自動提案。</p>
+  <p class="ref">参考：Blue Yonder（需要予測×在庫最適化） → 在庫=豚、需要=市場価格に転用</p>
+</div>
+
+<div class="idea-card">
+  <h4><span class="idea-num">3</span>飼料コスト最適化エージェント</h4>
+  <p>FCR（飼料要求率）の個体・ロット別分析から、飼料配合・給餌量の最適化を自動提案。月次コスト削減額をレポート。</p>
+  <p class="ref">参考：RELEX（在庫最適化） → 在庫補充最適化を飼料給餌最適化に転用</p>
+</div>
+
+<div class="idea-card">
+  <h4><span class="idea-num">4</span>繁殖スケジュール自動最適化エージェント</h4>
+  <p>発情周期パターン学習→最適授精タイミング通知→分娩予測→産子数予測のフルサイクル自動管理。</p>
+  <p class="ref">参考：Connecterra IDA（酪農繁殖管理） → 酪農の繁殖最適化モデルを養豚に転用</p>
+</div>
+
+<div class="idea-card">
+  <h4><span class="idea-num">5</span>環境自動制御提案エージェント</h4>
+  <p>温湿度・CO2・アンモニア濃度を監視し、「換気量を15%増やすべき」等の具体的操作を自動提案。将来的には換気扇・空調の自動制御まで。</p>
+  <p class="ref">参考：H2O.ai AutoML（製造業品質管理） → 品質パラメータ→環境パラメータに転用</p>
+</div>
+
+<div class="idea-card">
+  <h4><span class="idea-num">6</span>経営KPIダッシュボード＋改善提案エージェント</h4>
+  <p>1頭当たり生産コスト・PSY・FCR・死亡率を自動集計し、業界ベンチマーク比較と改善優先順位を自動提案。</p>
+  <p class="ref">参考：PigINFO（ベンチマーク）＋monday.com（KPIダッシュボード）の組み合わせ</p>
+</div>
+
+<div class="idea-card">
+  <h4><span class="idea-num">7</span>24時間AIバーチャル獣医チャットエージェント</h4>
+  <p>Porkerデータを知識ベースとした農場特化LLMエージェント。「この豚の症状は？」「今すぐ何をすべきか？」に即回答。</p>
+  <p class="ref">参考：EveryPig（AIバーチャル獣医） → 農場固有データで特化・精度向上</p>
+</div>
+
+<div class="idea-card">
+  <h4><span class="idea-num">8</span>農場間ベンチマーク比較エージェント</h4>
+  <p>Porker利用農場全体のアノニマイズデータと自農場を比較し、「PSYが業界平均より12%低い、主因は〇〇」と自動診断。</p>
+  <p class="ref">参考：Qrvey Healthcare Analytics（患者データ匿名化比較） → 農場データに転用</p>
+</div>
+
+<div class="idea-card">
+  <h4><span class="idea-num">9</span>IoTセンサー異常検知＋緊急アラートエージェント</h4>
+  <p>センサー故障・断線・電源トラブルを検知し、「豚舎2号棟の温度センサーが応答なし」と即時通知。夜間無人状態でも安全網を提供。</p>
+  <p class="ref">参考：Senseye（設備監視）＋PigGuard（行動異常監視）のハイブリッド</p>
+</div>
+
+<div class="idea-card">
+  <h4><span class="idea-num">10</span>出荷〜仕入れの資金繰り予測エージェント</h4>
+  <p>出荷予定×単価予測×飼料仕入れコスト×ローン返済を組み合わせ、向こう3〜6ヶ月の資金繰り見通しを自動生成。</p>
+  <p class="ref">参考：Farmonaut（農場財務計画AI）＋Kinaxis（シナリオプランニング）の農業特化版</p>
+</div>
+</div>
+
+<p style="font-size:12px; color:#aaa; text-align:center; margin-top:24px;">DX豚舎 競合リサーチ｜フェーズ2-B｜2026-03-22</p>
+</body>
+</html>
