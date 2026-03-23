@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Porker AIエージェント サービス企画骨子</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Hiragino Kaku Gothic Pro', 'Meiryo', sans-serif; background: #fff; color: #222; padding: 32px; max-width: 1100px; margin: 0 auto; }
+  h1 { font-size: 26px; margin-bottom: 6px; color: #1a1a2e; border-bottom: 4px solid #e63946; padding-bottom: 10px; }
+  h2 { font-size: 20px; margin: 36px 0 12px; color: #1a1a2e; border-left: 5px solid #457b9d; padding-left: 12px; }
+  h3 { font-size: 15px; margin: 20px 0 8px; color: #457b9d; }
+  p { font-size: 14px; line-height: 1.8; color: #444; margin-bottom: 8px; }
+  .meta { font-size: 12px; color: #888; margin-bottom: 28px; }
+  .section { border: 1px solid #e9ecef; border-radius: 10px; padding: 24px; margin-bottom: 28px; }
+  table { width: 100%; border-collapse: collapse; margin: 12px 0; font-size: 13px; }
+  th { background: #1a1a2e; color: #fff; padding: 10px 8px; text-align: left; }
+  td { padding: 9px 8px; border-bottom: 1px solid #e9ecef; vertical-align: top; }
+  tr:nth-child(even) { background: #f8f9fa; }
+
+  /* ポジショニングマップ */
+  .pos-map { position: relative; width: 100%; padding-top: 60%; background: #f8f9fa; border-radius: 8px; border: 2px solid #e9ecef; margin: 16px 0; overflow: hidden; }
+  .pos-inner { position: absolute; top: 0; left: 0; right: 0; bottom: 0; }
+  .axis-h { position: absolute; top: 50%; left: 0; right: 0; height: 2px; background: #adb5bd; }
+  .axis-v { position: absolute; left: 50%; top: 0; bottom: 0; width: 2px; background: #adb5bd; }
+  .axis-label { position: absolute; font-size: 11px; color: #666; font-weight: bold; }
+  .axis-l { top: 50%; left: 8px; transform: translateY(-50%); }
+  .axis-r { top: 50%; right: 8px; transform: translateY(-50%); }
+  .axis-t { top: 4px; left: 50%; transform: translateX(-50%); }
+  .axis-b { bottom: 4px; left: 50%; transform: translateX(-50%); }
+  .dot { position: absolute; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: bold; color: #fff; cursor: default; }
+  .dot-label { position: absolute; font-size: 10px; white-space: nowrap; }
+  .star { position: absolute; background: #e63946; border-radius: 8px; padding: 6px 10px; font-size: 11px; font-weight: bold; color: #fff; animation: pulse 2s infinite; }
+  @keyframes pulse { 0%,100%{opacity:1;} 50%{opacity:0.7;} }
+
+  /* コンセプトカード */
+  .concept-cards { display: flex; gap: 20px; flex-wrap: wrap; margin: 16px 0; }
+  .concept-card { flex: 1; min-width: 280px; border: 2px solid #e9ecef; border-radius: 10px; overflow: hidden; }
+  .concept-card.recommended { border-color: #e63946; }
+  .card-header { padding: 16px; color: #fff; font-size: 15px; font-weight: bold; }
+  .card-header-a { background: #457b9d; }
+  .card-header-b { background: #2a9d8f; }
+  .card-header-c { background: #e9c46a; color: #333; }
+  .card-header-rec { background: #e63946; }
+  .card-body { padding: 16px; font-size: 13px; }
+  .card-body ul { list-style: none; padding: 0; }
+  .card-body li { padding: 4px 0; border-bottom: 1px solid #f1f3f5; }
+  .card-body li:before { content: "▸ "; color: #457b9d; }
+  .rec-badge { display: inline-block; background: #e63946; color: #fff; border-radius: 4px; padding: 2px 8px; font-size: 11px; margin-left: 8px; }
+
+  /* ロードマップ */
+  .roadmap { display: flex; gap: 0; margin: 16px 0; }
+  .rm-phase { flex: 1; padding: 16px; border-right: 2px dashed #e9ecef; }
+  .rm-phase:last-child { border-right: none; }
+  .rm-phase h4 { font-size: 14px; font-weight: bold; color: #1a1a2e; margin-bottom: 8px; }
+  .rm-phase ul { list-style: none; font-size: 12px; line-height: 2; }
+  .rm-phase ul li:before { content: "○ "; color: #2a9d8f; }
+  .rm-3m { background: #e8f4f8; border-radius: 8px 0 0 8px; }
+  .rm-6m { background: #f0faf9; }
+  .rm-1y { background: #fff9e8; border-radius: 0 8px 8px 0; }
+
+  /* リスク */
+  .risk-card { border-left: 4px solid #e63946; padding: 14px; margin-bottom: 10px; background: #fff8f8; border-radius: 0 8px 8px 0; }
+  .risk-card h4 { font-size: 13px; font-weight: bold; color: #e63946; margin-bottom: 6px; }
+  .risk-card.mid { border-color: #f4a261; background: #fff9f3; }
+  .risk-card.mid h4 { color: #f4a261; }
+  .risk-card.low { border-color: #2a9d8f; background: #f0faf9; }
+  .risk-card.low h4 { color: #2a9d8f; }
+
+  /* 優位性 */
+  .advantage { display: flex; gap: 16px; flex-wrap: wrap; margin: 12px 0; }
+  .adv-item { flex: 1; min-width: 180px; background: #e8f4f8; border-radius: 8px; padding: 14px; text-align: center; }
+  .adv-item .adv-icon { font-size: 28px; margin-bottom: 6px; }
+  .adv-item h4 { font-size: 13px; font-weight: bold; margin-bottom: 4px; }
+  .adv-item p { font-size: 12px; color: #666; }
+
+  .highlight { background: #fff3cd; border-radius: 3px; padding: 1px 5px; }
+  .tag-red { display: inline-block; background: #f8d7da; color: #721c24; border-radius: 12px; padding: 2px 10px; font-size: 12px; margin: 2px; }
+  .tag-green { display: inline-block; background: #d4edda; color: #155724; border-radius: 12px; padding: 2px 10px; font-size: 12px; margin: 2px; }
+</style>
+</head>
+<body>
+
+<h1>Porker AIエージェント事業 ― サービス企画骨子</h1>
+<p class="meta">作成日：2026-03-22 ｜ 経営層向け戦略企画書 ｜ フェーズ3リサーチ統合アウトプット</p>
+
+<!-- ========== 1. ポジショニングマップ ========== -->
+<div class="section">
+<h2>1. ポジショニングマップ</h2>
+<p>縦軸：AI自律度（低＝記録中心 ↔ 高＝自律判断・提案）<br>横軸：対象データの統合度（低＝単一機能 ↔ 高＝全データ統合）</p>
+
+<div style="position:relative; width:100%; padding-top:55%; background:#f8f9fa; border-radius:8px; border:2px solid #e9ecef; margin:16px 0; overflow:hidden;">
+  <div style="position:absolute; top:0; left:0; right:0; bottom:0;">
+    <!-- 軸 -->
+    <div style="position:absolute; top:50%; left:0; right:0; height:2px; background:#adb5bd;"></div>
+    <div style="position:absolute; left:50%; top:0; bottom:0; width:2px; background:#adb5bd;"></div>
+    <!-- 軸ラベル -->
+    <span style="position:absolute; top:48%; left:6px; font-size:11px; color:#666;">単一機能</span>
+    <span style="position:absolute; top:48%; right:6px; font-size:11px; color:#666;">全データ統合</span>
+    <span style="position:absolute; top:4px; left:48%; font-size:11px; color:#666;">AI自律度：高</span>
+    <span style="position:absolute; bottom:4px; left:44%; font-size:11px; color:#666;">AI自律度：低</span>
+
+    <!-- 競合ドット -->
+    <!-- PigGuard: 単機能・中AI -->
+    <div style="position:absolute; top:30%; left:12%; width:32px; height:32px; border-radius:50%; background:#457b9d; display:flex; align-items:center; justify-content:center; font-size:9px; color:#fff; font-weight:bold;">PG</div>
+    <span style="position:absolute; top:22%; left:9%; font-size:10px;">PigGuard</span>
+
+    <!-- PIGI: 単機能・低AI -->
+    <div style="position:absolute; top:58%; left:8%; width:28px; height:28px; border-radius:50%; background:#6c757d; display:flex; align-items:center; justify-content:center; font-size:9px; color:#fff;">PI</div>
+    <span style="position:absolute; top:68%; left:6%; font-size:10px;">PIGI</span>
+
+    <!-- EveryPig: 中統合・中AI -->
+    <div style="position:absolute; top:38%; left:30%; width:30px; height:30px; border-radius:50%; background:#f4a261; display:flex; align-items:center; justify-content:center; font-size:9px; color:#fff; font-weight:bold;">EP</div>
+    <span style="position:absolute; top:30%; left:27%; font-size:10px;">EveryPig</span>
+
+    <!-- NavFarm: 中統合・中AI -->
+    <div style="position:absolute; top:42%; left:38%; width:28px; height:28px; border-radius:50%; background:#e9c46a; display:flex; align-items:center; justify-content:center; font-size:9px; color:#333; font-weight:bold;">NF</div>
+    <span style="position:absolute; top:34%; left:35%; font-size:10px;">NavFarm</span>
+
+    <!-- Porker: 高統合・低AI（現在地） -->
+    <div style="position:absolute; top:62%; left:72%; width:36px; height:36px; border-radius:50%; background:#1a1a2e; display:flex; align-items:center; justify-content:center; font-size:9px; color:#fff; font-weight:bold;">POR</div>
+    <span style="position:absolute; top:72%; left:68%; font-size:10px; font-weight:bold;">Porker（現在）</span>
+
+    <!-- PigVision: 高統合・低AI -->
+    <div style="position:absolute; top:68%; left:58%; width:28px; height:28px; border-radius:50%; background:#6c757d; display:flex; align-items:center; justify-content:center; font-size:9px; color:#fff;">PV</div>
+    <span style="position:absolute; top:77%; left:55%; font-size:10px;">PigVision</span>
+
+    <!-- 目指す位置（星マーク） -->
+    <div style="position:absolute; top:14%; left:68%; background:#e63946; border-radius:8px; padding:6px 10px; font-size:11px; font-weight:bold; color:#fff;">★ 目指す位置<br>Porker AI Agent</div>
+    <!-- 矢印 -->
+    <div style="position:absolute; top:45%; left:76%; font-size:22px; color:#e63946; transform:rotate(-45deg);">↑</div>
+  </div>
+</div>
+<h3>差別化ポイント</h3>
+<table>
+  <thead><tr><th>軸</th><th>競合（現状）</th><th>Porker AIエージェント（目標）</th></tr></thead>
+  <tbody>
+    <tr><td>AI自律度</td><td>監視・記録が中心。アラートはあるが提案なし</td><td>自律提案・自動最適化。「何をすべきか」まで回答</td></tr>
+    <tr><td>データ統合度</td><td>単一機能が多い（監視のみ、記録のみ）</td><td>体重/飼料/環境/疾病/繁殖/出荷/経営の全統合</td></tr>
+    <tr><td>国内適応</td><td>海外製は日本養豚の慣行・規制に未対応</td><td>国内農場の慣行・規制・帳票に完全対応</td></tr>
+    <tr><td>価格</td><td>高額または不透明</td><td>月額1〜3万円の明確な価格設定</td></tr>
+  </tbody>
+</table>
+</div>
+
+<!-- ========== 2. サービスコンセプト案3案 ========== -->
+<div class="section">
+<h2>2. サービスコンセプト案（3案）</h2>
+<div class="concept-cards">
+
+  <!-- 案A -->
+  <div class="concept-card">
+    <div class="card-header card-header-a">案A：「AIファームドクター」</div>
+    <div class="card-body">
+      <p><strong>ワンライナー：</strong>農場の健康を24時間守る、AIかかりつけ医</p>
+      <p><strong>ターゲット：</strong>母豚100〜500頭の中規模農場。疾病コストと損耗率の削減が急務</p>
+      <p><strong>MVP機能：</strong></p>
+      <ul>
+        <li>疾病発症予測（3〜5日前警告）</li>
+        <li>AIバーチャル獣医チャット</li>
+        <li>24時間異常モニタリング</li>
+      </ul>
+      <p style="margin-top:10px;"><strong>AIエージェント判断点：</strong>疾病リスクスコアが閾値超えで自動的に「抗生剤投与を推奨」「獣医師に連絡を」とアクション提案</p>
+      <p><strong>価格案：</strong>月額¥15,000（PRO）〜¥30,000（Enterprise）</p>
+      <p><strong>参考サービス：</strong>Senseye（予知保全）＋EveryPig（AIバーチャル獣医）</p>
+    </div>
+  </div>
+
+  <!-- 案B（推奨） -->
+  <div class="concept-card recommended">
+    <div class="card-header card-header-rec">案B：「Porker AIエージェント」<span class="rec-badge">推奨</span></div>
+    <div class="card-body">
+      <p><strong>ワンライナー：</strong>農場データが、毎日の経営判断を自動化する</p>
+      <p><strong>ターゲット：</strong>Porker既存ユーザー（母豚200〜1,000頭規模）。データは蓄積されているが活用できていない</p>
+      <p><strong>MVP機能：</strong></p>
+      <ul>
+        <li>経営KPIダッシュボード＋改善提案</li>
+        <li>出荷最適日・販売戦略提案</li>
+        <li>疾病リスク早期警告</li>
+        <li>AIチャット（農場データに基づく回答）</li>
+      </ul>
+      <p style="margin-top:10px;"><strong>AIエージェント判断点：</strong>毎朝「今日すべきこと」を3つ自動生成。「出荷ロットAは今週が最適」「豚舎3号棟の換気を増やすべき」等の具体的アクション</p>
+      <p><strong>価格案：</strong>無料（Porker基本機能）→ ¥9,800/月（AIエージェント追加）→ ¥24,800/月（フル機能）</p>
+      <p><strong>参考サービス：</strong>Blue Yonder（自律最適化）＋Farmonaut（段階価格）＋PigINFO（ベンチマーク）</p>
+    </div>
+  </div>
+
+  <!-- 案C -->
+  <div class="concept-card">
+    <div class="card-header card-header-c">案C：「スマート養豚マーケット」</div>
+    <div class="card-body">
+      <p><strong>ワンライナー：</strong>Porkerユーザー農場のデータが、業界全体を最適化する</p>
+      <p><strong>ターゲット：</strong>農協・大規模養豚グループ・インテグレーター。複数農場の一括管理と業界ベンチマークニーズ</p>
+      <p><strong>MVP機能：</strong></p>
+      <ul>
+        <li>農場間ベンチマーク比較AI</li>
+        <li>グループ一括管理ダッシュボード</li>
+        <li>資金繰り予測エージェント</li>
+      </ul>
+      <p style="margin-top:10px;"><strong>AIエージェント判断点：</strong>グループ内農場の生産性格差を分析し「A農場のFCRをB農場の手法に揃えると月▲300万円のコスト削減」と自動試算</p>
+      <p><strong>価格案：</strong>農場数×¥20,000/月（5農場から）</p>
+      <p><strong>参考サービス：</strong>Kinaxis（多拠点最適化）＋PigINFO（ベンチマーク）</p>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- ========== 3. 推奨案（案B）の詳細 ========== -->
+<div class="section">
+<h2>3. 推奨案（案B）選定と根拠</h2>
+
+<h3>選定理由</h3>
+<table>
+  <thead><tr><th>評価軸</th><th>案A（AIファームドクター）</th><th>案B（推奨）</th><th>案C（マーケット）</th></tr></thead>
+  <tbody>
+    <tr><td>Porkerデータ活用度</td><td>△（疾病特化）</td><td>◎（全データ統合）</td><td>○（農場間比較）</td></tr>
+    <tr><td>既存ユーザーへの訴求</td><td>○</td><td>◎（既存ユーザーが直接対象）</td><td>△（大口のみ）</td></tr>
+    <tr><td>市場規模</td><td>○</td><td>◎（中規模農場が最多層）</td><td>△（大口は少ない）</td></tr>
+    <tr><td>競合との差別化</td><td>△（PigGuard等と競合）</td><td>◎（国内に競合なし）</td><td>○</td></tr>
+    <tr><td>早期収益化</td><td>○</td><td>◎（既存ユーザーへのアップセル）</td><td>△（導入に時間）</td></tr>
+    <tr><td>技術実現可能性</td><td>◎</td><td>○（難易度高いが既存データで可能）</td><td>△（マルチテナント設計必要）</td></tr>
+  </tbody>
+</table>
+
+<h3>市場規模の概算</h3>
+<table>
+  <thead><tr><th>項目</th><th>数値</th><th>出典・根拠</th></tr></thead>
+  <tbody>
+    <tr><td>国内養豚農場数</td><td>約4,000農場</td><td>農林水産省2024年畜産統計</td></tr>
+    <tr><td>目標ターゲット（中規模）</td><td>約1,200農場（30%）</td><td>母豚100〜1,000頭規模</td></tr>
+    <tr><td>想定ARPU</td><td>¥15,000/月</td><td>案B PRO〜Enterpriseの中間値</td></tr>
+    <tr><td>TAM（国内全農場獲得時）</td><td>約7.2億円/年</td><td>1,200農場×¥15,000×12ヶ月</td></tr>
+    <tr><td>SAM（3年内現実的市場）</td><td>約1.8億円/年</td><td>TAMの25%獲得を想定</td></tr>
+    <tr><td>グローバル市場</td><td>$8B+(2030年)</td><td>AI精密畜産農業市場（CAGR 27.9%）</td></tr>
+  </tbody>
+</table>
+
+<h3>当社の参入優位性</h3>
+<div class="advantage">
+  <div class="adv-item">
+    <div class="adv-icon">📊</div>
+    <h4>既存データ資産</h4>
+    <p>Porkerに蓄積された国内養豚農場の実データ。競合が持ちえない学習データ</p>
+  </div>
+  <div class="adv-item">
+    <div class="adv-icon">🤝</div>
+    <h4>既存顧客関係</h4>
+    <p>Porker利用農場への直接アップセル。新規獲得コスト不要</p>
+  </div>
+  <div class="adv-item">
+    <div class="adv-icon">🇯🇵</div>
+    <h4>国内慣行への対応</h4>
+    <p>日本の養豚帳票・規制・慣行を熟知。海外企業には真似できない</p>
+  </div>
+  <div class="adv-item">
+    <div class="adv-icon">🔗</div>
+    <h4>センサーエコシステム</h4>
+    <p>Porker Sensorシリーズとの連携。ハードとソフトの一貫したデータ収集</p>
+  </div>
+</div>
+
+<h3>ロードマップ</h3>
+<div class="roadmap">
+  <div class="rm-phase rm-3m">
+    <h4>▼ 〜3ヶ月（MVP）</h4>
+    <ul>
+      <li>Porkerデータ活用AI基盤構築</li>
+      <li>経営KPIダッシュボード（自動集計）</li>
+      <li>AIチャット機能β版（農場データ参照）</li>
+      <li>既存ユーザー10農場でアルファテスト</li>
+      <li>月額¥9,800プランの設計・決定</li>
+    </ul>
+  </div>
+  <div class="rm-phase rm-6m">
+    <h4>▼ 〜6ヶ月（β版リリース）</h4>
+    <ul>
+      <li>疾病リスク早期警告AI（3日前予測）</li>
+      <li>出荷最適日提案機能</li>
+      <li>プロアクティブ「今日すべきこと」通知</li>
+      <li>50農場へのβ版展開</li>
+      <li>フリーミアムモデル正式リリース</li>
+    </ul>
+  </div>
+  <div class="rm-phase rm-1y">
+    <h4>▼ 〜1年（正式リリース）</h4>
+    <ul>
+      <li>繁殖スケジュール自動最適化</li>
+      <li>飼料コスト最適化AI</li>
+      <li>農場間ベンチマーク比較（匿名化）</li>
+      <li>資金繰り予測エージェント</li>
+      <li>300農場・ARR1.8億円を目標</li>
+    </ul>
+  </div>
+</div>
+</div>
+
+<!-- ========== 4. リスクと検証 ========== -->
+<div class="section">
+<h2>4. リスクと検証ポイント</h2>
+
+<h3>主要リスク</h3>
+
+<div class="risk-card">
+  <h4>🔴 高リスク：AIの予測精度不足による信頼喪失</h4>
+  <p>疾病予測や出荷タイミング提案がはずれた場合、農家の信頼を失い解約に直結。農場データが少ない初期段階では特に精度が不安定。</p>
+  <p><strong>対策：</strong>初期は「参考情報」として提供し、精度開示（「この予測の精度は○%」）を義務付け。人間の判断を支援するポジションを維持。</p>
+</div>
+
+<div class="risk-card mid">
+  <h4>🟠 中リスク：農家のITリテラシー格差による普及障壁</h4>
+  <p>国内養豚農家の高齢化・IT非習熟層が多く、AI機能の価値を理解・活用できない可能性。</p>
+  <p><strong>対策：</strong>UXは「毎朝3つの行動提案」等、シンプルな形式に絞る。JA・農協・獣医師等の中間パートナーを通じた導入支援を設計。</p>
+</div>
+
+<div class="risk-card mid">
+  <h4>🟠 中リスク：大手（NEC、富士通、Panasonic農業）の参入</h4>
+  <p>スマート農業市場への大手IT企業参入が加速。資本力・営業力で価格競争になる可能性。</p>
+  <p><strong>対策：</strong>Porkerの既存データ資産と農家コミュニティが参入障壁。早期に150農場以上の採用実績を作りデータ優位を確立。</p>
+</div>
+
+<div class="risk-card low">
+  <h4>🟢 低リスク：技術的実装難易度</h4>
+  <p>LLM/機械学習技術は成熟しており、Porkerの既存データ基盤があれば実装可能。ただしIoTセンサーとの連携設計に時間を要する可能性。</p>
+  <p><strong>対策：</strong>MVPはPorkerの既存データのみで動作するAI機能から開始。IoT連携は6ヶ月フェーズ以降で追加。</p>
+</div>
+
+<h3 style="margin-top:20px;">最初に検証すべき仮説トップ3</h3>
+<table>
+  <thead><tr><th>#</th><th>仮説</th><th>検証方法</th><th>成功指標</th></tr></thead>
+  <tbody>
+    <tr>
+      <td>1</td>
+      <td><strong>「毎日のAI提案」は農家の行動変容を促せるか？</strong><br>プロアクティブ通知で農家が実際に行動を変え、成果を実感できるか</td>
+      <td>10農場×3ヶ月のアルファテスト。「提案→実行率」と「実行後の成果」をトラッキング</td>
+      <td>提案実行率40%以上、「役立った」評価70%以上</td>
+    </tr>
+    <tr>
+      <td>2</td>
+      <td><strong>月額¥9,800のAI追加料金に支払い意欲はあるか？</strong><br>Porker基本ユーザーがAI機能に追加課金するか</td>
+      <td>既存ユーザーへの事前ヒアリング（20農場）と早期割引β募集</td>
+      <td>ヒアリング対象の30%以上が「払う」と回答</td>
+    </tr>
+    <tr>
+      <td>3</td>
+      <td><strong>Porkerデータだけで疾病予測精度は実用レベルか？</strong><br>体重変化率・環境データのみで疾病3日前予測が可能か</td>
+      <td>過去データでのバックテスト（疾病発生農場のデータで遡及検証）</td>
+      <td>感度60%以上、偽陽性率20%未満</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+
+<p style="font-size:12px; color:#aaa; text-align:center; margin-top:28px;">DX豚舎 競合リサーチ｜フェーズ3 戦略企画骨子｜2026-03-22 ｜ Confidential</p>
+</body>
+</html>
