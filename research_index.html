@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>養豚×AI競合リサーチ インデックス</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Hiragino Kaku Gothic Pro', 'Meiryo', sans-serif; background: #1a1a2e; color: #eee; min-height: 100vh; padding: 40px 24px; }
+  .container { max-width: 900px; margin: 0 auto; }
+  h1 { font-size: 26px; margin-bottom: 4px; color: #fff; }
+  .subtitle { font-size: 14px; color: #adb5bd; margin-bottom: 32px; }
+  .phase { margin-bottom: 32px; }
+  .phase-title { font-size: 13px; font-weight: bold; color: #adb5bd; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 12px; border-bottom: 1px solid #2c2c54; padding-bottom: 6px; }
+  .cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 16px; }
+  .card { background: #16213e; border: 1px solid #0f3460; border-radius: 10px; padding: 20px; text-decoration: none; color: inherit; transition: all 0.2s; display: block; }
+  .card:hover { border-color: #e63946; transform: translateY(-2px); box-shadow: 0 4px 20px rgba(230, 57, 70, 0.2); }
+  .card-phase { font-size: 10px; font-weight: bold; letter-spacing: 2px; margin-bottom: 8px; }
+  .phase-1 { color: #457b9d; }
+  .phase-2 { color: #2a9d8f; }
+  .phase-3 { color: #e63946; }
+  .card h3 { font-size: 15px; color: #fff; margin-bottom: 6px; }
+  .card p { font-size: 12px; color: #868e96; line-height: 1.6; }
+  .card .tag { display: inline-block; background: #0f3460; color: #adb5bd; border-radius: 4px; padding: 2px 8px; font-size: 11px; margin-top: 10px; margin-right: 4px; }
+  .data-files { margin-top: 32px; background: #16213e; border-radius: 10px; padding: 20px; }
+  .data-files h3 { font-size: 14px; color: #adb5bd; margin-bottom: 12px; }
+  .file-list { font-size: 12px; color: #6c757d; line-height: 2.2; font-family: monospace; }
+  .file-list span { color: #2a9d8f; }
+  .summary-box { background: #0f3460; border-radius: 8px; padding: 16px 20px; margin-bottom: 24px; display: flex; gap: 32px; flex-wrap: wrap; }
+  .stat { text-align: center; }
+  .stat .num { font-size: 28px; font-weight: bold; color: #e63946; }
+  .stat .label { font-size: 11px; color: #adb5bd; margin-top: 2px; }
+</style>
+</head>
+<body>
+<div class="container">
+  <h1>養豚×AI競合リサーチ</h1>
+  <p class="subtitle">DX豚舎 Porker AIエージェント事業化リサーチ ｜ 2026-03-22</p>
+
+  <div class="summary-box">
+    <div class="stat"><div class="num">18</div><div class="label">競合サービス数</div></div>
+    <div class="stat"><div class="num">12</div><div class="label">他業界参考サービス</div></div>
+    <div class="stat"><div class="num">5</div><div class="label">空白地帯（機会）</div></div>
+    <div class="stat"><div class="num">10</div><div class="label">機能転用アイデア</div></div>
+    <div class="stat"><div class="num">3</div><div class="label">サービスコンセプト案</div></div>
+  </div>
+
+  <!-- フェーズ1 -->
+  <div class="phase">
+    <div class="phase-title">Phase 1 ― データ収集</div>
+    <div class="cards">
+      <div class="card" style="cursor:default;">
+        <div class="card-phase phase-1">PHASE 1-A</div>
+        <h3>海外養豚AIサービス</h3>
+        <p>5クエリ×検索結果から10サービスを収集。PigGuard, EveryPig, NavFarm等を分析。</p>
+        <span class="tag">10サービス</span>
+        <span class="tag">5カ国</span>
+      </div>
+      <div class="card" style="cursor:default;">
+        <div class="card-phase phase-1">PHASE 1-B</div>
+        <h3>AIツールディレクトリ</h3>
+        <p>農業・畜産カテゴリのAIツール8件を収集。Farmonaut ($2.30/月〜) が唯一の価格公開事例。</p>
+        <span class="tag">8サービス</span>
+        <span class="tag">価格公開1件</span>
+      </div>
+      <div class="card" style="cursor:default;">
+        <div class="card-phase phase-1">PHASE 1-C</div>
+        <h3>他業界AIエージェント</h3>
+        <p>製造・物流・ヘルスケア・農業の12サービスを調査。価格モデル・機能設計の示唆を抽出。</p>
+        <span class="tag">12サービス</span>
+        <span class="tag">5業界</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- フェーズ2 -->
+  <div class="phase">
+    <div class="phase-title">Phase 2 ― 分析・構造化</div>
+    <div class="cards">
+      <a class="card" href="phase2_analysis/competitive_map.html">
+        <div class="card-phase phase-2">PHASE 2-A</div>
+        <h3>競合マップ ↗</h3>
+        <p>18サービスの多軸分類。機能×価格帯マトリックスで空白地帯を特定。5大参入機会を抽出。</p>
+        <span class="tag">クリックで開く</span>
+        <span class="tag">空白地帯5箇所</span>
+      </a>
+      <a class="card" href="phase2_analysis/cross_industry_insights.html">
+        <div class="card-phase phase-2">PHASE 2-B</div>
+        <h3>他業界示唆分析 ↗</h3>
+        <p>価格モデル・MVP設計・データUXのベストプラクティス。養豚への転用アイデア10選。</p>
+        <span class="tag">クリックで開く</span>
+        <span class="tag">転用アイデア10件</span>
+      </a>
+    </div>
+  </div>
+
+  <!-- フェーズ3 -->
+  <div class="phase">
+    <div class="phase-title">Phase 3 ― 戦略立案</div>
+    <div class="cards">
+      <a class="card" href="phase3_strategy/service_concept.html" style="border-color:#e63946;">
+        <div class="card-phase phase-3">PHASE 3</div>
+        <h3>サービス企画骨子 ↗</h3>
+        <p>ポジショニングマップ、3コンセプト案、推奨案「Porker AIエージェント」の詳細、ロードマップ、リスク分析。</p>
+        <span class="tag">クリックで開く</span>
+        <span class="tag">経営層向け</span>
+        <span class="tag">推奨案あり</span>
+      </a>
+      <a class="card" href="phase3_strategy/porker_ai_agent_deepdive.html" style="border-color:#e63946; background: rgba(230,57,70,0.05);">
+        <div class="card-phase phase-3">PHASE 3 ― 特集</div>
+        <h3>🔥 Porker AI農場長 構想深掘り ↗</h3>
+        <p>ノートブック3フェーズ設計 × 他業界事例10アイデア × 優先度マトリックス × 価格設計 × 開発インプット。ベンチマーク＋AI農場長仮説の全体像。</p>
+        <span class="tag">クリックで開く</span>
+        <span class="tag">アイデア10選</span>
+        <span class="tag">開発仕様付き</span>
+        <span class="tag">最新</span>
+      </a>
+    </div>
+  </div>
+
+  <!-- データファイル一覧 -->
+  <div class="data-files">
+    <h3>📁 ディレクトリ構成</h3>
+    <div class="file-list">
+      research/<br>
+      ├── <span>index.html</span>　　　　　← このページ<br>
+      ├── phase1_scraping/<br>
+      │　　├── <span>services.json</span>　　← 海外養豚AIサービス（10件）<br>
+      │　　├── <span>services.csv</span><br>
+      │　　└── <span>summary.md</span><br>
+      ├── phase1_directories/<br>
+      │　　├── <span>ai_tools.json</span>　　← AIツールディレクトリ（8件）<br>
+      │　　├── <span>ai_tools.csv</span><br>
+      │　　└── <span>summary.md</span><br>
+      ├── phase1_cross_industry/<br>
+      │　　├── <span>services.json</span>　　← 他業界AIサービス（12件）<br>
+      │　　├── <span>services.csv</span><br>
+      │　　└── <span>summary.md</span><br>
+      ├── phase2_analysis/<br>
+      │　　├── <span>competitive_map.html</span>　← 競合マップ（分析HTML）<br>
+      │　　└── <span>cross_industry_insights.html</span>　← 他業界示唆（分析HTML）<br>
+      └── phase3_strategy/<br>
+      　　　└── <span>service_concept.html</span>　← 企画骨子（戦略HTML）
+    </div>
+  </div>
+</div>
+</body>
+</html>
